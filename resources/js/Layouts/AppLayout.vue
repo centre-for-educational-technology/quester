@@ -11,17 +11,25 @@
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
-                                    <jet-application-mark class="block h-9 w-auto" />
-                                </Link>
+                            <div class="shrink-0 flex items-center font-semibold">
+                                <span class="text-2xl text-blue-800">Q</span>
+                                <span>uester</span>
                             </div>
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                <jet-nav-link :href="route('questionnaires.index')" :active="route().current('questionnaires')">
+                                    Questionnaires
                                 </jet-nav-link>
+                                <jet-nav-link :href="route('dashboard')" :active="route().current('results')">
+                                    Results
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('constructs.index')" :active="route().current('constructs.index')">
+                                    Constructs
+                                </jet-nav-link>
+                                <!--<jet-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
+                                    Dashboard
+                                </jet-nav-link>-->
                             </div>
                         </div>
 
