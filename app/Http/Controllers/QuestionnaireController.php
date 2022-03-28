@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreQuestionnaireRequest;
 use App\Models\Construct;
 use App\Models\Questionnaire;
+use App\Models\Respondent;
+use App\Models\Response;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -48,14 +51,30 @@ class QuestionnaireController extends Controller
         $start_time = new DateTime($request['start_time']);
         $end_time = new DateTime($request['end_time']);
 
+        //$permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+        //$code = substr(str_shuffle($permitted_chars), 0, 10);
+
+        $code = random_int(0, 999999);
+        $code = str_pad($code, 6, 0, STR_PAD_LEFT);
+
+
         $questionnaire = Questionnaire::create([
             'name' => $validated['name'],
             'subject' => $request['subject'],
             'start_time' => $start_time->format('Y-m-d H:i'),
             'end_time' => $end_time->format('Y-m-d H:i'),
-            'code' => '123',
+            'code' => $code,
             'creator_id' => $request->user()->id,
         ]);
+
+        $constructs = $request->input('constructs');
+        if (!empty($constructs)) {
+            foreach ($constructs as $construct_id) {
+                DB::table('model_has_constructs')->insert(
+                    ['construct_id' => $construct_id, 'model_type' => 'App\Models\Questionnaire', 'model_id' => $questionnaire->id]
+                );
+            }
+        }
 
         return Redirect::route('questionnaires.index');
     }
@@ -91,7 +110,7 @@ class QuestionnaireController extends Controller
      */
     public function update(Request $request, Questionnaire $questionnaire)
     {
-        //
+
     }
 
     /**
@@ -104,4 +123,75 @@ class QuestionnaireController extends Controller
     {
         //
     }
+
+    public function start(Request $request) {   //choose
+        $code = $request['questionnaire_code'];
+        $questionnaire = DB::table('questionnaires')->where('code', $code)->first();
+        if (!$questionnaire) {
+            return Inertia::render('Welcome');
+        }
+        return Inertia::render('Response/QuestionnaireStart', ['questionnaire' => $questionnaire]);
+    }
+
+    public function statements(Request $request) {  //start
+        $code = $request['questionnaire_code'];
+        $questionnaire = DB::table('questionnaires')->where('code', $code)->first();
+        if (!$questionnaire) {
+            return Inertia::render('Welcome');
+        }
+
+        // create respondent
+        $respondent  = Respondent::create([
+            'questionnaire_id' => $questionnaire->id,
+        ]);
+
+        // questionnaire has constructs
+        $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
+
+        // construct have statements
+        $statements = DB::table('statements')->whereIn('construct_id', $construct_ids->all())->orderBy('position')->get();
+
+        return Inertia::render('Response/Statements', [
+            'questionnaire' => $questionnaire,
+            'respondent' => $respondent,
+            'statements' => $statements,
+        ]);
+
+    }
+
+    public function finish(Request $request) {
+
+        $code = $request['questionnaire_code'];
+        $questionnaire = DB::table('questionnaires')->where('code', $code)->first();
+        if (!$questionnaire) {
+            return Inertia::render('Welcome');
+        }
+
+        $respondent_id = $request['respondent_id'];
+        $respondent = DB::table('respondents')->where('id', $respondent_id);
+        $respondent->update([
+            'end_time' => date('Y-m-d H:i:s'),
+        ]);
+
+        $statements = $request['statements'];
+
+        // create reponses
+        foreach($statements as $statement) {
+
+            $response = Response::create([
+                'respondent_id' => $respondent_id,
+                'answer' => $statement['answer'],
+                'statement_id' => $statement['id'],
+            ]);
+
+        }
+
+        return Inertia::render('Response/Finished');
+
+    }
+
+    /*public function createResponses($statements) {
+
+    }*/
+
 }

@@ -38,12 +38,11 @@
                             <div class="text-xs text-gray-700 mb-2">Select all that apply</div>
                             <div class="bg-blue-50 p-4 rounded border border-blue-200">
                                 <div v-for="(construct, id) in constructs">
-                                    <jet-checkbox :value="id"/>
+                                    <input type="checkbox" :value="id" v-model="form.constructs" />
                                     <div class="inline-block ml-2">{{construct}} </div>
                                 </div>
                             </div>
                         </div>
-
 
                         <div>
                             <jet-checkbox /> <jet-label class="inline-block" value="Log in required" />
@@ -101,6 +100,7 @@ export default defineComponent({
                 subject: '',
                 start_time: '',
                 end_time: '',
+                constructs: [],
             }, {
                 bag: 'createQuestionnaire',
                 resetOnSuccess: false,
@@ -110,6 +110,8 @@ export default defineComponent({
     methods: {
         saveQuestionnaire(data) {
             console.log('save questionnaire');
+            console.log(data);
+            console.log(data.constructs);
             this.form.post(route('questionnaires.index'), data);
         },
     },
