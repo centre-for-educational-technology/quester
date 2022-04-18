@@ -1,21 +1,20 @@
 <template>
-    <app-layout title="Constructs">
+    <app-layout title="Results">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Questionnaires
+                Results
             </h2>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <nav-link href="questionnaires/create">Add new Questionnaire</nav-link>
                     <div v-for="questionnaire in questionnaires" class="border m-1 border-gray-200">
-                        <b>{{ questionnaire.name }}</b>
+                        <nav-link :href="'questionnaires/'+questionnaire.id">{{ questionnaire.name }}</nav-link>
                         {{questionnaire.subject}}
                         {{questionnaire.start_time}}
                         {{questionnaire.end_time}}
-                        {{questionnaire.code}}
+                        {{questionnaire.respondents.length}}
                     </div>
                 </div>
             </div>

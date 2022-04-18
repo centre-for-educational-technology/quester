@@ -15,4 +15,20 @@ class Respondent extends Model
         'end_time',
         'questionnaire_id'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function questionnaire()
+    {
+        return $this->belongsTo('App\Models\Questionnaire');
+    }
+
+    public function responses()
+    {
+        return $this->hasMany('App\Models\Response');
+    }
+
 }

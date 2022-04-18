@@ -18,4 +18,15 @@ class Questionnaire extends Model
         'code',
         'creator_id'
     ];
+
+    public function creator()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function respondents()
+    {
+        return $this->hasMany('App\Models\Respondent');
+    }
+
 }

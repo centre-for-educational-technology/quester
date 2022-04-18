@@ -9,6 +9,7 @@ use App\Models\Respondent;
 use App\Models\Response;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -22,8 +23,11 @@ class QuestionnaireController extends Controller
      */
     public function index()
     {
-        $questionnaires = Questionnaire::all();
-        return Inertia::render('Questionnaires/Index', ['questionnaires' => $questionnaires]);
+        if (Auth::user()) {
+            $questionnaires = Questionnaire::where('creator_id', Auth::id())->get();
+            return Inertia::render('Questionnaires/Index', ['questionnaires' => $questionnaires]);
+        }
+        return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
     }
 
     /**
@@ -33,8 +37,11 @@ class QuestionnaireController extends Controller
      */
     public function create()
     {
-        $constructs = Construct::all()->pluck('name', 'id');
-        return Inertia::render('Questionnaires/Create', ['constructs' => $constructs]);
+        if (Auth::user()) {
+            $constructs = Construct::all()->pluck('name', 'id');
+            return Inertia::render('Questionnaires/Create', ['constructs' => $constructs]);
+        }
+        return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
     }
 
     /**
@@ -83,11 +90,22 @@ class QuestionnaireController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Questionnaire  $questionnaire
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function show(Questionnaire $questionnaire)
     {
-        //
+        if (Auth::user()) {
+            $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
+            $constructs = Construct::whereIn('id', $construct_ids)->with('statements')->get();
+
+            $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->with('responses')->get();
+            return Inertia::render('Results/Questionnaire', [
+                'questionnaire' => $questionnaire,
+                'constructs' => $constructs,
+                'respondents' => $respondents
+            ]);
+        }
+        return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
     }
 
     /**
@@ -190,8 +208,12 @@ class QuestionnaireController extends Controller
 
     }
 
-    /*public function createResponses($statements) {
-
-    }*/
+    public function results() {
+        if (Auth::user()) {
+            $questionnaires = Questionnaire::where('creator_id', Auth::id())->with('respondents')->get();
+            return Inertia::render('Results/Index', ['questionnaires' => $questionnaires]);
+        }
+        return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
+    }
 
 }

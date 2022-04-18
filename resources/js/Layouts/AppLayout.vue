@@ -12,8 +12,10 @@
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center font-semibold">
-                                <span class="text-2xl text-blue-800">Q</span>
-                                <span>uester</span>
+                                <a href="/">
+                                    <span class="text-2xl text-blue-800">Q</span>
+                                    <span>uester</span>
+                                </a>
                             </div>
 
                             <!-- Navigation Links -->
@@ -21,7 +23,7 @@
                                 <jet-nav-link :href="route('questionnaires.index')" :active="route().current('questionnaires')">
                                     Questionnaires
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('dashboard')" :active="route().current('results')">
+                                <jet-nav-link :href="route('results')" :active="route().current('results')">
                                     Results
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('constructs.index')" :active="route().current('constructs.index')">
@@ -150,8 +152,14 @@
                 <!-- Responsive Navigation Menu -->
                 <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <jet-responsive-nav-link :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                        <jet-responsive-nav-link :href="route('questionnaires.index')" :active="route().current('questionnaires.index')">
+                            Questionnaires
+                        </jet-responsive-nav-link>
+                        <jet-responsive-nav-link :href="route('results')" :active="route().current('results')">
+                            Results
+                        </jet-responsive-nav-link>
+                        <jet-responsive-nav-link :href="route('constructs.index')" :active="route().current('connstructs.index')">
+                            Constructs
                         </jet-responsive-nav-link>
                     </div>
 

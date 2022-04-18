@@ -43,4 +43,6 @@ Route::get('/start', [QuestionnaireController::class, 'start'])->name('questionn
 Route::get('/statements', [QuestionnaireController::class, 'statements'])->name('questionnaires.statements');
 Route::get('/finish', [QuestionnaireController::class, 'finish'])->name('questionnaires.finish');
 
+Route::get('/results', [QuestionnaireController::class, 'results'])->name('results');
+
 
