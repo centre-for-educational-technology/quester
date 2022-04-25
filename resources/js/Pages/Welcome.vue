@@ -4,7 +4,7 @@
 
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 sm:items-center sm:pt-0">
         <div v-if="canLogin" class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-            <Link v-if="$page.props.user" :href="route('dashboard')" class="text-sm text-gray-700 underline">
+            <Link v-if="$page.props.user" :href="route('constructs.index')" class="text-sm text-gray-700 underline">
                 Dashboard
             </Link>
 
@@ -25,21 +25,24 @@
         </div>
 
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex text-2xl justify-center pt-8 sm:justify-start sm:pt-0">
-                Hello!
-            </div>
-            <div>
-                Quester is a tool for collecting feedback on your lesson. Please answer the questions so that the teacher can plan his/her lessons even better.
 
+            <div class="mt-3 mb-8 max-w-md mx-auto text-base sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                <span class="font-extrabold">Quester</span>
+                is a tool for collecting feedback on your lesson. Please answer the questions so that the teacher can plan his/her lessons even better.
             </div>
-            <div class="p-4 bg-white">
+
+            <div class="py-8 bg-white rounded-lg border border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div>Enter pin to get started</div>
-                <div><input type="text" v-model="this.questionnaire_code"/></div>
+                <div>
+                    <input required class="appearance-none rounded-md border ring-1 ring-gray-200 border-gray-200 focus:ring-gray-500 focus:border-gray-500 focus-outline-none" type="text" v-model="this.questionnaire_code"/>
+                </div>
                 <div class="mt-2">
                     <button @click="startQuestionnaire()" class="hover:bg-gray-100 text-gray-700 mr-2 border rounded px-4 py-2 font-semibold uppercase text-xs">Start</button>
                 </div>
+                </div>
             </div>
-            <div class="flex justify-center mt-4 sm:items-center sm:justify-between">
+            <div class="flex justify-center mt-4 sm:items-center sm:justify-between" v-if="laravelVersion && phpVersion">
                 <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
                     Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
                 </div>
