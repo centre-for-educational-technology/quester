@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
+        $this->call([
+            RolesAndPermissionsSeeder::class,
+        ]);
+
         if (config('app.env') === 'local') {
 
             $construct_id = DB::table('constructs')->insertGetId([
