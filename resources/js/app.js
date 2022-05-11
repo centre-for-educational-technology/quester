@@ -4,6 +4,8 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
 import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -14,6 +16,7 @@ createInertiaApp({
         return createApp({ render: () => h(app, props) })
             .use(plugin)
             .use(LaravelPermissionToVueJS)
+            .use(ElementPlus)
             .mixin({ methods: { route } })
             .mount(el);
     },
