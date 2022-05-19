@@ -24,7 +24,7 @@ class QuestionnaireController extends Controller
     public function index()
     {
         if (Auth::user()) {
-            $questionnaires = Questionnaire::where('creator_id', Auth::id())->get();
+            $questionnaires = Questionnaire::where('creator_id', Auth::id())->paginate(20);
             return Inertia::render('Questionnaires/Index', ['questionnaires' => $questionnaires]);
         }
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);

@@ -1,12 +1,12 @@
 <template>
     <app-layout title="Constructs">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                 Create new Questionnaire
             </h2>
         </template>
 
-        <div class="py-8">
+        <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg space-y-6 sm:p-6">
 

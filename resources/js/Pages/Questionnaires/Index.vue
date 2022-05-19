@@ -1,22 +1,46 @@
 <template>
     <app-layout title="Constructs">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
                 Questionnaires
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="overflow-hidden">
                     <nav-link href="questionnaires/create">Add new Questionnaire</nav-link>
-                    <div v-for="questionnaire in questionnaires" class="border m-1 border-gray-200">
-                        <b>{{ questionnaire.name }}</b>
-                        {{questionnaire.subject}}
-                        {{questionnaire.start_time}}
-                        {{questionnaire.end_time}}
-                        <span class=cursor-pointer @click="showLinkDialog(questionnaire.code)">Link</span>
-                    </div>
+
+                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border">
+                        <thead class="bg-gray-50">
+                            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Subjects</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">End Date</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Constructs</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Share</th>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white">
+                            <tr v-for="(questionnaire, index) in questionnaires.data" class="border m-1 border-gray-200">
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-sm text-gray-900 sm:pl-6">{{ index + 1 }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-medium text-gray-900"><b>{{ questionnaire.name }}</b></td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.subject}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.start_time}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.end_time}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <div v-for="(construct, index) in questionnaire.constructs">
+                                        {{ index }}
+                                    </div>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <span class="cursor-pointer underline" @click="showLinkDialog(questionnaire.code)">Link</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <pagination class="mt-10" :links="questionnaires.links" @pagination-change-page="getQuestionnaires"/>
 
                     <el-dialog v-model="dialogVisible">
                         <div class="text-center">
@@ -42,6 +66,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
 import QRCodeVue3 from 'qrcode-vue3'
+import Pagination from "@/Components/Pagination.vue";
 
 export default defineComponent({
     components: {
@@ -49,6 +74,7 @@ export default defineComponent({
         NavLink,
         JetButton,
         QRCodeVue3,
+        Pagination,
     },
     props: ['questionnaires'],
     data() {
