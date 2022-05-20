@@ -24,6 +24,11 @@ class Questionnaire extends Model
         return $this->belongsTo('App\Models\User');
     }
 
+    public function constructs()
+    {
+        return $this->belongsToMany(Construct::class, 'model_has_constructs', 'model_id');
+    }
+
     public function respondents()
     {
         return $this->hasMany('App\Models\Respondent');

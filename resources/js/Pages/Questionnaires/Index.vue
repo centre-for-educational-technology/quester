@@ -29,8 +29,10 @@
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.start_time}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.end_time}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                    <div v-for="(construct, index) in questionnaire.constructs">
-                                        {{ index }}
+                                    <div class="inline-block" v-for="(construct, index) in questionnaire.constructs">
+                                        <span :title="construct.name"
+                                             class="mr-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                {{ index + 1 }}</span>
                                     </div>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
