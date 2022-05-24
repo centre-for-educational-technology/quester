@@ -45,7 +45,7 @@
                         </div>
 
                         <div>
-                            <jet-checkbox /> <jet-label class="inline-block" value="Log in required" />
+                            <jet-checkbox v-model="form.log_in_required"/> <jet-label class="inline-block" value="Log in required" />
                         </div>
 
 
@@ -100,6 +100,7 @@ export default defineComponent({
                 subject: '',
                 start_time: '',
                 end_time: '',
+                log_in_required: false,
                 constructs: [],
             }, {
                 bag: 'createQuestionnaire',

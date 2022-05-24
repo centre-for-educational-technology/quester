@@ -72,6 +72,7 @@ class QuestionnaireController extends Controller
             'end_time' => $end_time->format('Y-m-d H:i'),
             'code' => $code,
             'creator_id' => $request->user()->id,
+            'log_in_required' => $request['log_in_required'],
         ]);
 
         $constructs = $request->input('constructs');

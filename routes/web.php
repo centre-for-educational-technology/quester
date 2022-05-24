@@ -3,6 +3,7 @@
 use App\Http\Controllers\ConstructController;
 //use App\Http\Controllers\HarIDController;
 use App\Http\Controllers\QuestionnaireController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +40,8 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 
 Route::resource('constructs', ConstructController::class);
 Route::resource('questionnaires', QuestionnaireController::class);
+Route::resource('users', UserController::class);
+
 Route::get('/start', [QuestionnaireController::class, 'start'])->name('questionnaires.start');
 Route::get('/statements', [QuestionnaireController::class, 'statements'])->name('questionnaires.statements');
 Route::get('/finish', [QuestionnaireController::class, 'finish'])->name('questionnaires.finish');
