@@ -17,17 +17,25 @@ use Inertia\Inertia;
 class QuestionnaireController extends Controller
 {
     /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('permission:view questionnaires');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Inertia\Response
      */
     public function index()
     {
-        if (Auth::user()) {
-            $questionnaires = Questionnaire::where('creator_id', Auth::id())->with('constructs')->paginate(20);
-            return Inertia::render('Questionnaires/Index', ['questionnaires' => $questionnaires]);
-        }
-        return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
+        $questionnaires = Questionnaire::where('creator_id', Auth::id())->with('constructs')->paginate(20);
+        return Inertia::render('Questionnaires/Index', ['questionnaires' => $questionnaires]);
     }
 
     /**

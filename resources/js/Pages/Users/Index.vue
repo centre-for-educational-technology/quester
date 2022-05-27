@@ -16,6 +16,7 @@
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Name</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                            <th></th>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                         <tr v-for="(user, index) in users.data" class="border m-1 border-gray-200">
@@ -27,6 +28,9 @@
                                         <span class="mr-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
                                                 {{ role.name }}</span>
                                 </div>
+                            </td>
+                            <td class="uppercase text-sm">
+                                <a :href="'/users/'+user.id+'/edit'">Edit</a>
                             </td>
                         </tr>
                         </tbody>

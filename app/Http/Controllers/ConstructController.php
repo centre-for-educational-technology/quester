@@ -15,6 +15,17 @@ use Inertia\Response;
 class ConstructController extends Controller
 {
     /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('permission:view constructs');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return Response
@@ -43,7 +54,7 @@ class ConstructController extends Controller
      */
     public function store(StoreConstructRequest $request)
     {
-        
+
         $validated = $request->validated();
 
         $construct = Construct::create([
