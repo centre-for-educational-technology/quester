@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use phpDocumentor\Reflection\Types\Integer;
 
 class QuestionnaireController extends Controller
 {
@@ -23,8 +24,8 @@ class QuestionnaireController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('permission:view questionnaires');
+        //$this->middleware('auth');
+        //$this->middleware('permission:view questionnaires');
     }
 
     /**
@@ -107,7 +108,7 @@ class QuestionnaireController extends Controller
             $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
             $constructs = Construct::whereIn('id', $construct_ids)->with('statements')->get();
 
-            $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->with('responses')->get();
+            $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->with('responses')->with('user')->get();
             return Inertia::render('Results/Questionnaire', [
                 'questionnaire' => $questionnaire,
                 'constructs' => $constructs,
@@ -167,8 +168,14 @@ class QuestionnaireController extends Controller
             return Inertia::render('Welcome');
         }
 
+        $user_id = null;
+        if (Auth::user()) {
+            $user_id = Auth::user()->id;
+        }
+
         // create respondent
         $respondent  = Respondent::create([
+            'user_id' => $user_id,
             'questionnaire_id' => $questionnaire->id,
         ]);
 
@@ -205,11 +212,13 @@ class QuestionnaireController extends Controller
         // create reponses
         foreach($statements as $statement) {
 
-            $response = Response::create([
-                'respondent_id' => $respondent_id,
-                'answer' => $statement['answer'],
-                'statement_id' => $statement['id'],
-            ]);
+            if (key_exists('answer', $statement)) {
+                $response = Response::create([
+                    'respondent_id' => $respondent_id,
+                    'answer' => $statement['answer'],
+                    'statement_id' => $statement['id'],
+                ]);
+            }
 
         }
 
