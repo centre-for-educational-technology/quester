@@ -17,6 +17,7 @@
                             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Construct</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statements</th>
+                            <th></th>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="(construct, index) in constructs" class="border m-1 border-gray-200">
@@ -28,6 +29,9 @@
                                     <div v-for="statement in construct.statements">
                                         {{ statement.text }}
                                     </div>
+                                </td>
+                                <td class="uppercase text-sm text-gray-500">
+                                    <a v-if="construct.questionnaires.length === 0" :href="'/constructs/'+construct.id+'/edit'">Edit</a>
                                 </td>
                             </tr>
                         </tbody>

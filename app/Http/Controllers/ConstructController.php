@@ -7,6 +7,7 @@ use App\Models\Construct;
 use App\Models\Statement;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -32,7 +33,7 @@ class ConstructController extends Controller
      */
     public function index()
     {
-        $constructs = Construct::with('statements')->get();
+        $constructs = Construct::with('statements')->with('questionnaires')->get();
         return Inertia::render('Constructs/Index', ['constructs' => $constructs]);
     }
 
@@ -73,14 +74,31 @@ class ConstructController extends Controller
         if (empty($statements_info)) {
             return false;
         }
+        $position = 1;
         foreach ($statements_info as $index=>$statement_info) {
-            if (isset($statement_info['text'])) {
-                $statement = Statement::create([
-                    'text' => $statement_info['text'],
-                    'construct_id' => $construct->id,
-                    'position' => $index + 1,
-                ]);
+
+            if (isset($statement_info['id'])) {
+                // update existing statement
+                $statement = Statement::find($statement_info['id']);
+                if (empty($statement_info['text'])) {
+                    $statement->delete();
+                }
+                if (isset($statement_info['text'])) {
+                    $statement->text = $statement_info['text'];
+                    $statement->position = $position++;
+                    $statement->save();
+                }
+            } else {
+                // create new statement
+                if (isset($statement_info['text'])) {
+                    $statement = Statement::create([
+                        'text' => $statement_info['text'],
+                        'construct_id' => $construct->id,
+                        'position' => $position++,
+                    ]);
+                }
             }
+
         }
     }
 
@@ -99,11 +117,16 @@ class ConstructController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Construct  $construct
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Construct $construct)
     {
-        //
+        $construct = Construct::where('id', $construct->id)
+            ->with('statements')
+            ->first();
+        return Inertia::render('Constructs/Edit', [
+            'construct' => $construct
+        ]);
     }
 
     /**
@@ -111,11 +134,22 @@ class ConstructController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Construct  $construct
-     * @return \Illuminate\Http\Response
+     * @return RedirectResponse
      */
-    public function update(Request $request, Construct $construct)
+    public function update(StoreConstructRequest $request, Construct $construct)
     {
-        //
+        $validated = $request->validated();
+
+        // if construct not used for questionnaires, update
+        if (!$construct->isUsed()) {
+            $construct->update([
+                'name' => $validated['name'],
+                'objective' => $request['objective'],
+            ]);
+            self::saveStatements($construct, $request['statements']);
+        }
+
+        return Redirect::route('constructs.index');
     }
 
     /**
