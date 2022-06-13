@@ -47,5 +47,8 @@ Route::get('/statements', [QuestionnaireController::class, 'statements'])->name(
 Route::get('/finish', [QuestionnaireController::class, 'finish'])->name('questionnaires.finish');
 
 Route::get('/results', [QuestionnaireController::class, 'results'])->name('results');
+Route::get('/getQuestionnaireStatementAverageResult', [QuestionnaireController::class, 'getQuestionnaireStatementAverageResult']);
+Route::get('/getStatementData', [QuestionnaireController::class, 'getStatementData']);
+Route::get('/getConstructData', [QuestionnaireController::class, 'getConstructData']);
 
 

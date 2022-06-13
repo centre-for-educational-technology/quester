@@ -17,17 +17,20 @@
                         v-for="construct in constructs">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">{{ construct.name }}</th>
+                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <questionnaire-construct-results :questionnaire="this.questionnaire" :construct="construct" />
+                                </th>
                                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                     v-for="(statement, index) in construct.statements">
-                                    <div :title="statement.text">{{index + 1}}</div>
+                                    <div class="inline-block" :title="statement.text">{{index + 1}}</div>
+                                    <questionnaire-statement-results :questionnaire="this.questionnaire" :statement="statement" class="mt-10 sm:mt-0" />
                                 </th>
                             </tr>
                         </thead>
                         <tr v-for="respondent in respondents">
                             <td>
                                 <div v-if="respondent.user">{{ respondent.user.name }}</div>
-                                <div v-else>-</div>
+                                <div v-else>Student</div>
                             </td>
                             <td v-for="statement in construct.statements">
                                 <span>{{ getRespondentStatementAnswer(respondent.responses, statement.id) }}</span>
@@ -46,12 +49,16 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
+import QuestionnaireStatementResults from "@/Pages/Results/QuestionnaireStatementResults";
+import QuestionnaireConstructResults from "@/Pages/Results/QuestionnaireConstructResults";
 
 export default defineComponent({
     components: {
         AppLayout,
         NavLink,
         JetButton,
+        QuestionnaireStatementResults,
+        QuestionnaireConstructResults,
     },
     props: ['questionnaire', 'constructs', 'respondents'],
     methods: {

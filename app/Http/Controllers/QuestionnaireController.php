@@ -7,6 +7,7 @@ use App\Models\Construct;
 use App\Models\Questionnaire;
 use App\Models\Respondent;
 use App\Models\Response;
+use App\Models\Statement;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -232,6 +233,117 @@ class QuestionnaireController extends Controller
             return Inertia::render('Results/Index', ['questionnaires' => $questionnaires]);
         }
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
+    }
+
+    public function getQuestionnaireStatementAverageResult(Request $request) {
+
+        $questionnaire_id = $request['questionnaire_id'];
+        $statement_id = $request['statement_id'];
+
+        $average_result = $this->getQuestionnaireStatementAverage($questionnaire_id, $statement_id);
+
+        return response()->json($average_result);
+
+    }
+
+    public function getQuestionnaireStatementAverage($questionnaire_id, $statement_id) {
+        $respondents = Respondent::where('questionnaire_id', $questionnaire_id)->with('responses')->with('user')->get();
+        $respondents_count = count($respondents);
+        $answers_result = 0;
+        foreach ($respondents as $respondent) {
+            // get respondent answer based on statement
+            $response = Response::where('respondent_id', $respondent->id)->where('statement_id', $statement_id)->first();
+            if ($response) {
+                $answers_result += $response->answer;
+            }
+
+        }
+        $average = $answers_result / $respondents_count;
+
+        return array(
+            'average' => round($average,1),
+            'respondents_count' => $respondents_count,
+        );
+    }
+
+    public function getStatementData(Request $request) {
+
+        $questionnaire_id = $request['questionnaire_id'];
+        $statement_id = $request['statement_id'];
+
+        $respondents_ids = Respondent::where('questionnaire_id', $questionnaire_id)->pluck('id')->toArray();
+
+        $responses_with_answer_one = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 1)
+            ->count();
+        $responses_with_answer_two = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 2)
+            ->count();
+        $responses_with_answer_three = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 3)
+            ->count();
+        $responses_with_answer_four = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 4)
+            ->count();
+        $responses_with_answer_five = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 5)
+            ->count();
+        $statement_data = array(
+            $responses_with_answer_one,
+            $responses_with_answer_two,
+            $responses_with_answer_three,
+            $responses_with_answer_four,
+            $responses_with_answer_five,
+        );
+
+        $chartData =  array(
+            'labels' => [ 'Not very likely', 'Not likely', 'Hard to say', 'Likely', 'Very likely'],
+             'datasets' => [
+                    array(
+                        'label' => 'Respondents',
+                        'backgroundColor' => '#7CB4EC',
+                        'data' => $statement_data,
+                    )
+                ]
+            );
+
+        return response()->json($chartData);
+
+    }
+
+    public function getConstructData(Request $request) {
+
+        $questionnaire_id = $request['questionnaire_id'];
+        $construct_id = $request['construct_id'];
+
+        $construct_statements = Statement::where('construct_id', $construct_id)->get();
+
+        $statement_labels = array();
+        $construct_data = array();
+        foreach ($construct_statements as $statement) {
+            $statement_labels []= $statement->text;
+            $average_info = $this->getQuestionnaireStatementAverage($questionnaire_id, $statement->id);
+            $construct_data []= $average_info['average'];
+        }
+
+        $chartData =  array(
+            'labels' => $statement_labels,
+            'datasets' => [
+                array(
+                    'label' => 'Average',
+                    'backgroundColor' => '#7CB4EC',
+                    'data' => $construct_data,
+                )
+            ]
+        );
+
+        return response()->json($chartData);
+
     }
 
 }

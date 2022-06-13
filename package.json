@@ -26,9 +26,11 @@
         "vue-loader": "^16.1.2"
     },
     "dependencies": {
+        "chart.js": "^3.8.0",
         "element-plus": "^2.2.0",
         "laravel-permission-to-vuejs": "^3.0.0",
         "qrcode-vue3": "^1.4.17",
+        "vue-chartjs": "^4.1.1",
         "vue-lodash": "^2.1.2",
         "vue3-date-time-picker": "^2.8.0"
     }
