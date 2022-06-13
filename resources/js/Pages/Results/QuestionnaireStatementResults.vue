@@ -1,8 +1,8 @@
 <template>
 
-    <div class="inline-block">
+    <div class="inline-block w-full">
 
-        <statement-header :questionnaire_id="questionnaire.id" :statement_id="statement.id"
+        <statement-header :index="index" :questionnaire_id="questionnaire.id" :statement="statement"
                           v-on:click="showResultsDialog" class="underline cursor-pointer" />
 
         <!-- Feedback Modal -->
@@ -46,7 +46,7 @@ export default defineComponent({
         StatementBarChart,
     },
 
-    props: ['questionnaire', 'statement'],
+    props: ['index', 'questionnaire', 'statement'],
 
     data() {
         return {

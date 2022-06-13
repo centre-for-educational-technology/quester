@@ -17,22 +17,21 @@
                         v-for="construct in constructs">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                <th scope="col" class="px-3 py-3.5 text-left font-semibold text-gray-900">
                                     <questionnaire-construct-results :questionnaire="this.questionnaire" :construct="construct" />
                                 </th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                <th scope="col" class="text-center font-semibold text-gray-900"
                                     v-for="(statement, index) in construct.statements">
-                                    <div class="inline-block" :title="statement.text">{{index + 1}}</div>
-                                    <questionnaire-statement-results :questionnaire="this.questionnaire" :statement="statement" class="mt-10 sm:mt-0" />
+                                    <questionnaire-statement-results :index="index+1" :questionnaire="this.questionnaire" :statement="statement" class="mt-10 sm:mt-0" />
                                 </th>
                             </tr>
                         </thead>
-                        <tr v-for="respondent in respondents">
+                        <tr class="divide-x divide-gray-200" v-for="respondent in respondents">
                             <td>
                                 <div v-if="respondent.user">{{ respondent.user.name }}</div>
                                 <div v-else>Student</div>
                             </td>
-                            <td v-for="statement in construct.statements">
+                            <td v-for="statement in construct.statements" class="text-center">
                                 <span>{{ getRespondentStatementAnswer(respondent.responses, statement.id) }}</span>
                             </td>
                         </tr>

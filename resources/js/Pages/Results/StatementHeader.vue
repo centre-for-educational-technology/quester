@@ -1,7 +1,18 @@
 <template>
-    <div v-if="loaded">
+    <div v-if="loaded" :title="statement.text">
 
-        ( {{ this.average }}, N={{ this.respondents_count }} )
+        <div class="px-3 py-3.5 bg-green-400"
+            v-if="this.average > 4">
+            {{ index }} ( {{ this.average }}, N={{ this.respondents_count }} )
+        </div>
+        <div class="px-3 py-3.5 bg-yellow-400"
+            v-else="this.average >= 3">
+            {{ index }} ( {{ this.average }}, N={{ this.respondents_count }} )
+        </div>
+        <div class="px-3 py-3.5 bg-red-400"
+            v-else>
+            {{ index }} ( {{ this.average }}, N={{ this.respondents_count }} )
+        </div>
 
     </div>
 </template>
@@ -11,7 +22,7 @@
 
 export default {
 
-    props: ['questionnaire_id', 'statement_id'],
+    props: ['index', 'questionnaire_id', 'statement'],
 
     data() {
         return {
@@ -26,7 +37,7 @@ export default {
 
         let params = {
             "questionnaire_id": this.questionnaire_id,
-            "statement_id": this.statement_id,
+            "statement_id": this.statement.id,
         }
 
         try {
