@@ -37,6 +37,29 @@
                         </tr>
                     </table>
 
+                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border mb-5">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-3 py-3.5 text-left font-semibold text-gray-900">
+                                Questionnaire statements
+                            </th>
+                            <th scope="col" class="text-center font-semibold text-gray-900"
+                                v-for="(statement, index) in questionnaire_statements">
+                                <questionnaire-statement-results :index="index+1" :questionnaire="this.questionnaire" :statement="statement" class="mt-10 sm:mt-0" />
+                            </th>
+                        </tr>
+                        </thead>
+                        <tr class="divide-x divide-gray-200" v-for="respondent in respondents">
+                            <td>
+                                <div v-if="respondent.user">{{ respondent.user.name }}</div>
+                                <div v-else>Student</div>
+                            </td>
+                            <td v-for="statement in questionnaire_statements" class="text-center">
+                                <span>{{ getRespondentStatementAnswer(respondent.responses, statement.id) }}</span>
+                            </td>
+                        </tr>
+                    </table>
+
                 </div>
             </div>
         </div>
@@ -59,7 +82,7 @@ export default defineComponent({
         QuestionnaireStatementResults,
         QuestionnaireConstructResults,
     },
-    props: ['questionnaire', 'constructs', 'respondents'],
+    props: ['questionnaire', 'constructs', 'questionnaire_statements', 'respondents'],
     methods: {
         getRespondentStatementAnswer: function(respondent_responses, statement_id) {
             let answer = "";

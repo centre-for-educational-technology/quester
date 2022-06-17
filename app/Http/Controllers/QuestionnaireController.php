@@ -68,9 +68,6 @@ class QuestionnaireController extends Controller
         $start_time = new DateTime($request['start_time']);
         $end_time = new DateTime($request['end_time']);
 
-        //$permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyz';
-        //$code = substr(str_shuffle($permitted_chars), 0, 10);
-
         $code = random_int(0, 999999);
         $code = str_pad($code, 6, 0, STR_PAD_LEFT);
 
@@ -94,6 +91,8 @@ class QuestionnaireController extends Controller
             }
         }
 
+        (new StatementController)->saveStatements(null, $questionnaire->id, $request['statements']);
+
         return Redirect::route('questionnaires.index');
     }
 
@@ -108,11 +107,13 @@ class QuestionnaireController extends Controller
         if (Auth::user()) {
             $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
             $constructs = Construct::whereIn('id', $construct_ids)->with('statements')->get();
+            $questionnaire_statements = Statement::where('questionnaire_id', $questionnaire->id)->get();
 
             $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->with('responses')->with('user')->get();
             return Inertia::render('Results/Questionnaire', [
                 'questionnaire' => $questionnaire,
                 'constructs' => $constructs,
+                'questionnaire_statements' => $questionnaire_statements,
                 'respondents' => $respondents
             ]);
         }
@@ -185,6 +186,11 @@ class QuestionnaireController extends Controller
 
         // construct have statements
         $statements = DB::table('statements')->whereIn('construct_id', $construct_ids->all())->orderBy('position')->get();
+
+        // and questionnaire has statements
+        $questionnaire_statements = DB::table('statements')->where('questionnaire_id', $questionnaire->id)->orderBy('position')->get();
+
+        $statements = $statements->merge($questionnaire_statements);
 
         return Inertia::render('Response/Statements', [
             'questionnaire' => $questionnaire,

@@ -6,7 +6,7 @@
             {{ index }} ( {{ this.average }}, N={{ this.respondents_count }} )
         </div>
         <div class="px-3 py-3.5 bg-yellow-400"
-            v-else="this.average >= 3">
+            v-else-if="this.average >= 3">
             {{ index }} ( {{ this.average }}, N={{ this.respondents_count }} )
         </div>
         <div class="px-3 py-3.5 bg-red-400"

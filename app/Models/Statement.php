@@ -14,6 +14,7 @@ class Statement extends Model
     protected $fillable = [
         'text',
         'construct_id',
+        'questionnaire_id',
         'position'
     ];
 

@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('statements', function (Blueprint $table) {
-            $table->id();
-            $table->string('text');
-            $table->foreignId('construct_id')->nullable()->references('id')->on('constructs');
-            $table->tinyInteger('position');
-            $table->timestamps();
+        Schema::table('statements', function (Blueprint $table) {
+            $table->foreignId('questionnaire_id')->after('construct_id')->nullable()->references('id')->on('questionnaires');
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('statements');
+        Schema::table('statements', function (Blueprint $table) {
+            $table->dropColumn('questionnaire_id');
+        });
     }
 };

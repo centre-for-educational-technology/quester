@@ -45,6 +45,22 @@
                         </div>
 
                         <div>
+                            <jet-label for="statements" value="Additional questions for students" />
+                            <div id="statements" class="bg-blue-50 p-4 rounded border border-blue-200">
+                                <div v-for="(statement, index) in form.statements" class="py-1 sm:flex sm:items-center">
+                                    <div class="inline-flex items-center mr-2">{{ index + 1 }}</div>
+                                    <jet-input type="text" v-model="statement.text" class="mt-1 block w-full" />
+                                    <button type="button" @click="removeStatement(index)" class="inline-flex items-center ml-3 p-1 border border-red-200 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 sm:text-sm">
+                                        Delete
+                                    </button>
+                                </div>
+                                <button type="button" @click="addStatement" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-150 sm:text-sm">
+                                    Add new statement
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
                             <jet-checkbox v-model="form.log_in_required"/> <jet-label class="inline-block" value="Log in required" />
                         </div>
 
@@ -102,6 +118,11 @@ export default defineComponent({
                 end_time: '',
                 log_in_required: false,
                 constructs: [],
+                statements: [
+                    { text: '' },
+                    { text: '' },
+                    { text: '' }
+                ],
             }, {
                 bag: 'createQuestionnaire',
                 resetOnSuccess: false,
@@ -109,6 +130,14 @@ export default defineComponent({
         }
     },
     methods: {
+        addStatement() {
+            this.form.statements.push({
+                text: ''
+            });
+        },
+        removeStatement(index) {
+            this.form.statements.splice(index, 1);
+        },
         saveQuestionnaire(data) {
             console.log('save questionnaire');
             console.log(data);
