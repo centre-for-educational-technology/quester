@@ -26,8 +26,8 @@
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-sm text-gray-900 sm:pl-6">{{ index + 1 }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-medium text-gray-900"><b>{{ questionnaire.name }}</b></td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.subject}}</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.start_time}}</td>
-                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.end_time}}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.start_time) }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.end_time) }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     <div class="inline-block" v-for="(construct, index) in questionnaire.constructs">
                                         <span :title="construct.name"
@@ -69,6 +69,7 @@ import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
 import QRCodeVue3 from 'qrcode-vue3'
 import Pagination from "@/Components/Pagination.vue";
+import moment from "moment";
 
 export default defineComponent({
     components: {
@@ -92,6 +93,9 @@ export default defineComponent({
             this.questionnaire_code = questionnaire_code;
             this.questionnaire_url = this.base_url + '/start?questionnaire_code=' + questionnaire_code;
             this.dialogVisible = true;
+        },
+        formatDateTime(datetime)  {
+            return moment.utc(datetime).local().format("DD.MM.YYYY H:mm");
         }
     },
 })

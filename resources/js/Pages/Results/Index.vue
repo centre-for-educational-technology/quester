@@ -28,8 +28,8 @@
                                 </nav-link>
                             </td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.subject}}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.start_time}}</td>
-                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.end_time}}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.start_time) }}</td>
+                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.end_time) }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {{questionnaire.respondents.length}}
                             </td>
@@ -48,6 +48,7 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
+import moment from "moment";
 
 export default defineComponent({
     components: {
@@ -56,5 +57,10 @@ export default defineComponent({
         JetButton,
     },
     props: ['questionnaires'],
+    methods: {
+        formatDateTime(datetime)  {
+            return moment.utc(datetime).local().format("DD.MM.YYYY H:mm");
+        }
+    },
 })
 </script>

@@ -25,12 +25,22 @@
 
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="starttime" value="Start time" />
-                            <datepicker class="w-1/4" v-model="form.start_time" format="dd.MM.yyyy HH:mm" utc />
+                            <el-date-picker
+                                v-model="form.start_time"
+                                format="DD.MM.YYYY HH:mm"
+                                type="datetime"
+                                placeholder="Select date and time"
+                            />
                         </div>
 
                         <div class="col-span-6 sm:col-span-4">
                             <jet-label for="endtime" value="End time" />
-                            <datepicker class="w-1/4" v-model="form.end_time" format="dd.MM.yyyy HH:mm" utc />
+                            <el-date-picker
+                                v-model="form.end_time"
+                                format="DD.MM.YYYY HH:mm"
+                                type="datetime"
+                                placeholder="Select date and time"
+                            />
                         </div>
 
                         <div>
@@ -92,8 +102,6 @@ import JetCheckbox from '@/Jetstream/Checkbox'
 import JetInputError from '@/Jetstream/InputError.vue'
 import JetButton from '@/Jetstream/Button.vue'
 import JetNavLink from '@/Jetstream/NavLink.vue'
-import Datepicker from 'vue3-date-time-picker'
-import 'vue3-date-time-picker/dist/main.css'
 
 export default defineComponent({
     components: {
@@ -105,7 +113,6 @@ export default defineComponent({
         JetInputError,
         JetButton,
         JetNavLink,
-        Datepicker,
     },
     props: ['constructs'],
     data() {
@@ -139,9 +146,6 @@ export default defineComponent({
             this.form.statements.splice(index, 1);
         },
         saveQuestionnaire(data) {
-            console.log('save questionnaire');
-            console.log(data);
-            console.log(data.constructs);
             this.form.post(route('questionnaires.index'), data);
         },
     },

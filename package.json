@@ -32,6 +32,6 @@
         "qrcode-vue3": "^1.4.17",
         "vue-chartjs": "^4.1.1",
         "vue-lodash": "^2.1.2",
-        "vue3-date-time-picker": "^2.8.0"
+        "vue-moment": "^4.1.0"
     }
 }

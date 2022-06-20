@@ -9,11 +9,18 @@
         <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="overflow-hidden">
-                    {{questionnaire.subject}}
-                    {{questionnaire.start_time}}
-                    {{questionnaire.end_time}}
 
-                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border mb-5"
+                    <div>
+                        Subject: {{questionnaire.subject}}
+                    </div>
+                    <div>
+                        Start time: {{ formatDateTime(questionnaire.start_time) }}
+                    </div>
+                    <div>
+                        End time: {{ formatDateTime(questionnaire.end_time) }}
+                    </div>
+
+                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border my-5"
                         v-for="construct in constructs">
                         <thead class="bg-gray-50">
                             <tr>
@@ -37,7 +44,7 @@
                         </tr>
                     </table>
 
-                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border mb-5">
+                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border my-5">
                         <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-3 py-3.5 text-left font-semibold text-gray-900">
@@ -73,6 +80,7 @@ import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
 import QuestionnaireStatementResults from "@/Pages/Results/QuestionnaireStatementResults";
 import QuestionnaireConstructResults from "@/Pages/Results/QuestionnaireConstructResults";
+import moment from 'moment'
 
 export default defineComponent({
     components: {
@@ -92,6 +100,9 @@ export default defineComponent({
                 }
             });
             return answer;
+        },
+        formatDateTime(datetime)  {
+            return moment.utc(datetime).local().format("DD.MM.YYYY H:mm");
         }
     },
 })
