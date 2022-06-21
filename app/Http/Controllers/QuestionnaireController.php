@@ -241,6 +241,33 @@ class QuestionnaireController extends Controller
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
     }
 
+    public function getQuestionnaireConstructAverageResult(Request $request) {
+        $questionnaire_id = $request['questionnaire_id'];
+        $construct_id = $request['construct_id'];
+        $statements = Statement::where('construct_id', $construct_id)->get();
+        return $this->calculateStatementsAverage($questionnaire_id, $statements);
+    }
+
+    public function getQuestionnaireStatementsAverageResult(Request $request) {
+        $questionnaire_id = $request['questionnaire_id'];
+        $statements = Statement::where('questionnaire_id', $questionnaire_id)->get();
+        return $this->calculateStatementsAverage($questionnaire_id, $statements);
+    }
+
+    public function calculateStatementsAverage($questionnaire_id, $statements) {
+        $statements_result = 0;
+        foreach ($statements as $statement) {
+            $statement_average_info = $this->getQuestionnaireStatementAverage($questionnaire_id, $statement->id);
+            $statements_result += $statement_average_info['average'];
+        }
+        $average = 0;
+        if (count($statements) > 0) {
+            $average = $statements_result / count($statements);
+            $average = round($average, 1);
+        }
+        return $average;
+    }
+
     public function getQuestionnaireStatementAverageResult(Request $request) {
 
         $questionnaire_id = $request['questionnaire_id'];
@@ -264,10 +291,14 @@ class QuestionnaireController extends Controller
             }
 
         }
-        $average = $answers_result / $respondents_count;
+        $average = 0;
+        if ($respondents_count > 0) {
+            $average = $answers_result / $respondents_count;
+            $average = round($average, 1);
+        }
 
         return array(
-            'average' => round($average,1),
+            'average' => $average,
             'respondents_count' => $respondents_count,
         );
     }
@@ -322,19 +353,24 @@ class QuestionnaireController extends Controller
 
     }
 
-    public function getConstructData(Request $request) {
-
+    public function getQuestionnaireStatementsData(Request $request) {
         $questionnaire_id = $request['questionnaire_id'];
-        $construct_id = $request['construct_id'];
+        if ($request['construct_id']) {
+            $construct_id = $request['construct_id'];
+            $statements = Statement::where('construct_id', $construct_id)->get();
+        } else {
+            $statements = Statement::where('questionnaire_id', $questionnaire_id)->get();
+        }
+        return $this->getStatementsData($questionnaire_id, $statements);
+    }
 
-        $construct_statements = Statement::where('construct_id', $construct_id)->get();
-
+    public function getStatementsData($questionnaire_id, $statements) {
         $statement_labels = array();
-        $construct_data = array();
-        foreach ($construct_statements as $statement) {
+        $statements_data = array();
+        foreach ($statements as $statement) {
             $statement_labels []= $statement->text;
             $average_info = $this->getQuestionnaireStatementAverage($questionnaire_id, $statement->id);
-            $construct_data []= $average_info['average'];
+            $statements_data []= $average_info['average'];
         }
 
         $chartData =  array(
@@ -343,13 +379,12 @@ class QuestionnaireController extends Controller
                 array(
                     'label' => 'Average',
                     'backgroundColor' => '#7CB4EC',
-                    'data' => $construct_data,
+                    'data' => $statements_data,
                 )
             ]
         );
 
         return response()->json($chartData);
-
     }
 
 }

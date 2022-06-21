@@ -48,7 +48,9 @@ Route::get('/finish', [QuestionnaireController::class, 'finish'])->name('questio
 
 Route::get('/results', [QuestionnaireController::class, 'results'])->name('results');
 Route::get('/getQuestionnaireStatementAverageResult', [QuestionnaireController::class, 'getQuestionnaireStatementAverageResult']);
+Route::get('/getQuestionnaireConstructAverageResult', [QuestionnaireController::class, 'getQuestionnaireConstructAverageResult']);
+Route::get('/getQuestionnaireStatementsAverageResult', [QuestionnaireController::class, 'getQuestionnaireStatementsAverageResult']);
 Route::get('/getStatementData', [QuestionnaireController::class, 'getStatementData']);
-Route::get('/getConstructData', [QuestionnaireController::class, 'getConstructData']);
+Route::get('/getQuestionnaireStatementsData', [QuestionnaireController::class, 'getQuestionnaireStatementsData']);
 
 

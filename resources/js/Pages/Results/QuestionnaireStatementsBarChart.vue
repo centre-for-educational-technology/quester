@@ -74,7 +74,7 @@ export default {
 
         try {
 
-            await axios.get('/getConstructData', {params}).then(response => {
+            await axios.get('/getQuestionnaireStatementsData', {params}).then(response => {
                 this.chartData = response.data;
                 this.loaded = true;
             })

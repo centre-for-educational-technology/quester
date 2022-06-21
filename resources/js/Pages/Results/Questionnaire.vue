@@ -48,7 +48,7 @@
                         <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-3 py-3.5 text-left font-semibold text-gray-900">
-                                Questionnaire statements
+                                <questionnaire-statements-results :questionnaire="this.questionnaire" />
                             </th>
                             <th scope="col" class="text-center font-semibold text-gray-900"
                                 v-for="(statement, index) in questionnaire_statements">
@@ -80,6 +80,7 @@ import NavLink from '@/Jetstream/NavLink'
 import JetButton from '@/Jetstream/Button.vue'
 import QuestionnaireStatementResults from "@/Pages/Results/QuestionnaireStatementResults";
 import QuestionnaireConstructResults from "@/Pages/Results/QuestionnaireConstructResults";
+import QuestionnaireStatementsResults from "@/Pages/Results/QuestionnaireStatementsResults";
 import moment from 'moment'
 
 export default defineComponent({
@@ -89,6 +90,7 @@ export default defineComponent({
         JetButton,
         QuestionnaireStatementResults,
         QuestionnaireConstructResults,
+        QuestionnaireStatementsResults,
     },
     props: ['questionnaire', 'constructs', 'questionnaire_statements', 'respondents'],
     methods: {

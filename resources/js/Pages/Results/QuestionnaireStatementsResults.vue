@@ -3,19 +3,18 @@
     <div class="inline-block">
 
         <div v-if="loaded">
-            <div v-on:click="showResultsDialog" class="hidden sm:block underline cursor-pointer">{{ construct.name }} (M={{ this.average }})</div>
-            <div class="sm:hidden">{{ construct.name }}</div>
+            <div v-on:click="showResultsDialog" class="hidden sm:block underline cursor-pointer">Questionnaire statements (M={{ this.average }})</div>
         </div>
 
         <!-- Feedback Modal -->
         <jet-dialog-modal :show="viewResults" @close="viewResults = false">
             <template #title>
-                <div>{{  this.construct.name }}</div>
+                <div>Questionnaire statements</div>
             </template>
 
             <template #content>
 
-                <questionnaire-statements-bar-chart :questionnaire_id="questionnaire.id" :construct_id="construct.id" />
+                <questionnaire-statements-bar-chart :questionnaire_id="questionnaire.id" :construct_id="null" />
 
             </template>
 
@@ -29,18 +28,16 @@
 import { defineComponent } from 'vue'
 import JetActionSection from '@/Jetstream/ActionSection.vue'
 import JetDialogModal from '@/Jetstream/DialogModal.vue'
-import StatementHeader from "@/Pages/Results/StatementHeader";
 import QuestionnaireStatementsBarChart from "@/Pages/Results/QuestionnaireStatementsBarChart";
 
 export default defineComponent({
     components: {
         JetActionSection,
         JetDialogModal,
-        StatementHeader,
         QuestionnaireStatementsBarChart,
     },
 
-    props: ['questionnaire', 'construct'],
+    props: ['questionnaire'],
 
     data() {
         return {
@@ -61,12 +58,11 @@ export default defineComponent({
 
         let params = {
             "questionnaire_id": this.questionnaire.id,
-            "construct_id": this.construct.id,
         }
 
         try {
 
-            await axios.get('/getQuestionnaireConstructAverageResult', {params}).then(response => {
+            await axios.get('/getQuestionnaireStatementsAverageResult', {params}).then(response => {
                 this.average = response.data;
                 this.loaded = true;
             })
