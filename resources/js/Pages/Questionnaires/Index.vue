@@ -20,6 +20,7 @@
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">End Date</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Constructs</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Share</th>
+                            <th></th>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="(questionnaire, index) in questionnaires.data" class="border m-1 border-gray-200">
@@ -37,6 +38,9 @@
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     <span class="cursor-pointer underline" @click="showLinkDialog(questionnaire.code)">Link</span>
+                                </td>
+                                <td class="uppercase text-sm text-gray-500">
+                                    <a :href="'/questionnaires/'+questionnaire.id+'/edit'">Edit</a>
                                 </td>
                             </tr>
                         </tbody>

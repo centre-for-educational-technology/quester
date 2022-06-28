@@ -124,11 +124,22 @@ class QuestionnaireController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Questionnaire  $questionnaire
-     * @return \Illuminate\Http\Response
+     * @return \Inertia\Response
      */
     public function edit(Questionnaire $questionnaire)
     {
-        //
+        $questionnaire = Questionnaire::where('id', $questionnaire->id)
+            ->with('constructs')
+            ->with('statements')
+            ->with('respondents')
+            ->first();
+        $constructs = Construct::all()->pluck('name', 'id');
+        $questionnaire_constructs = $questionnaire->constructs->pluck('id');
+        return Inertia::render('Questionnaires/Edit', [
+            'questionnaire' => $questionnaire,
+            'constructs' => $constructs,
+            'questionnaire_constructs' => $questionnaire_constructs
+        ]);
     }
 
     /**
@@ -136,10 +147,48 @@ class QuestionnaireController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Questionnaire  $questionnaire
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Questionnaire $questionnaire)
+    public function update(StoreQuestionnaireRequest $request, Questionnaire $questionnaire)
     {
+        $validated = $request->validated();
+
+        $start_time = new DateTime($request['start_time']);
+        $end_time = new DateTime($request['end_time']);
+
+        $questionnaire->update([
+            'name' => $validated['name'],
+            'subject' => $request['subject'],
+            'start_time' => $start_time->format('Y-m-d H:i'),
+            'end_time' => $end_time->format('Y-m-d H:i'),
+            'log_in_required' => $request['log_in_required'],
+        ]);
+
+        (new StatementController)->saveStatements(null, $questionnaire->id, $request['statements']);
+
+        $this->updateConstructs($questionnaire, $request->input('constructs'));
+
+        return Redirect::route('questionnaires.index');
+    }
+
+    public function updateConstructs($questionnaire, $construct_ids) {
+
+        $questionnaire = Questionnaire::where('id', $questionnaire->id)
+            ->with('constructs')
+            ->first();
+
+        // delete previous relations
+        DB::table('model_has_constructs')->where('model_type', 'App\Models\Questionnaire')
+            ->where('model_id', $questionnaire->id)->delete();
+
+        // add new relations
+        if (!empty($construct_ids)) {
+            foreach ($construct_ids as $construct_id) {
+                DB::table('model_has_constructs')->insert(
+                    ['construct_id' => $construct_id, 'model_type' => 'App\Models\Questionnaire', 'model_id' => $questionnaire->id]
+                );
+            }
+        }
 
     }
 

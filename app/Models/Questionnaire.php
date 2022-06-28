@@ -34,4 +34,8 @@ class Questionnaire extends Model
         return $this->hasMany('App\Models\Respondent');
     }
 
+    public function statements() {
+        return $this->hasMany(Statement::class);
+    }
+
 }
