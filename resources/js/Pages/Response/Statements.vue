@@ -3,7 +3,7 @@
     <div class="relative flex items-top justify-center min-h-screen bg-gray-100 sm:items-center sm:pt-0">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
 
-            <div v-for="statement in statements" class="p-5">
+            <div v-for="statement in statements" class="p-5 mt-5">
 
                 <div>{{ statement.text }}</div>
 

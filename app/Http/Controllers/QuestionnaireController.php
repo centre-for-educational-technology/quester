@@ -206,10 +206,32 @@ class QuestionnaireController extends Controller
     public function start(Request $request) {   //choose
         $code = $request['questionnaire_code'];
         $questionnaire = DB::table('questionnaires')->where('code', $code)->first();
+
         if (!$questionnaire) {
-            return Inertia::render('Welcome');
+            return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
+        }
+
+        $can_answer = $this->isQuestionnaireOpen($questionnaire);
+        if (!$can_answer) {
+            return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
         }
         return Inertia::render('Response/QuestionnaireStart', ['questionnaire' => $questionnaire]);
+    }
+
+    public function isQuestionnaireOpen($questionnaire) {
+        $start_time = strtotime($questionnaire->start_time);
+        $end_time = strtotime($questionnaire->end_time);
+        $current_time = time();
+        if ($start_time > $current_time || $current_time > $end_time) {
+            return false;
+        }
+        if ($questionnaire->log_in_required) {
+            if (!Auth::user()) {
+                return false;
+            }
+        }
+        return true;
+
     }
 
     public function statements(Request $request) {  //start

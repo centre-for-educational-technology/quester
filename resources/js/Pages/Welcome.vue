@@ -22,9 +22,7 @@
                             </div>
                             <div v-if="canLogin" class="md:block md:ml-10 md:pr-4 md:space-x-8">
 
-                                    <Link v-if="$page.props.user" :href="route('constructs.index')" class="text-sm text-gray-700 underline">
-                                        Dashboard
-                                    </Link>
+                                    <a v-if="$page.props.user" href="/constructs" class="text-sm text-gray-700 underline">Dashboard</a>
 
                                     <template v-else>
 
