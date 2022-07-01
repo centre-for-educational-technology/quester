@@ -109,7 +109,7 @@ class QuestionnaireController extends Controller
             $constructs = Construct::whereIn('id', $construct_ids)->with('statements')->get();
             $questionnaire_statements = Statement::where('questionnaire_id', $questionnaire->id)->get();
 
-            $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->with('responses')->with('user')->get();
+            $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->whereNotNull('end_time')->with('responses')->with('user')->get();
             return Inertia::render('Results/Questionnaire', [
                 'questionnaire' => $questionnaire,
                 'constructs' => $constructs,

@@ -22,23 +22,26 @@
                             </div>
                             <div v-if="canLogin" class="md:block md:ml-10 md:pr-4 md:space-x-8">
 
-                                    <a v-if="$page.props.user" href="/constructs" class="text-sm text-gray-700 underline">Dashboard</a>
+                                <a v-if="$page.props.user" href="/user/profile" class="text-sm text-gray-700 underline">Profile</a>
 
-                                    <template v-else>
+                                <template v-else>
 
-                                        <Link v-if="canRegister" :href="route('register')" class="font-medium text-gray-500 hover:text-gray-900">
-                                            Register
-                                        </Link>
+                                    <Link v-if="canRegister" :href="route('register')" class="font-medium text-gray-500 hover:text-gray-900">
+                                        Register
+                                    </Link>
 
-                                        <Link :href="route('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
-                                            Log in
-                                        </Link>
+                                    <Link :href="route('login')" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                        Log in
+                                    </Link>
 
-                                        <!--<a :href="route('auth.harid.redirect')" class="ml-4 text-sm text-gray-700 underline">
-                                            HarID
-                                        </a>-->
+                                    <!--<a :href="route('auth.harid.redirect')" class="ml-4 text-sm text-gray-700 underline">
+                                        HarID
+                                    </a>-->
 
-                                    </template>
+                                </template>
+
+                                <!--<a v-if="$page.props.user && can('view questionnaires')" href="/questionnaires" class="text-sm text-gray-700 underline">Questionnaires</a>-->
+
 
                             </div>
                         </nav>

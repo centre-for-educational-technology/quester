@@ -31,7 +31,7 @@ class Questionnaire extends Model
 
     public function respondents()
     {
-        return $this->hasMany('App\Models\Respondent');
+        return $this->hasMany('App\Models\Respondent')->whereNotNull('end_time');
     }
 
     public function statements() {

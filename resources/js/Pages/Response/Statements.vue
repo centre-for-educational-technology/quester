@@ -51,7 +51,6 @@ export default defineComponent({
         JetButton,
     },
     props: ['questionnaire', 'respondent', 'statements'],
-    // iga statemendi kohta peab olema kirjas mis valiti
     data() {
         return {
             responses: [
@@ -64,22 +63,32 @@ export default defineComponent({
             statement.answer = answer;
         },
         submitAnswers() {
-            console.log('submit responses');
-            console.log(this.questionnaire.code);
-            console.log(this.statements);
-            //route('statement.index');
-
-            //this.form.post(route('statement.index'));
-            let form = this.$inertia.form({
-                '_method': 'GET',
-                questionnaire_code: this.questionnaire.code,
-                respondent_id: this.respondent.id,
-                statements: this.statements,
-            }, {
-                bag: 'submitResponse'
+            let allAnswered = this.checkIfAllAnswered(this.statements);
+            if (!allAnswered) {
+                alert('Please answer to all questions');
+            } else {
+                let form = this.$inertia.form({
+                    '_method': 'GET',
+                    questionnaire_code: this.questionnaire.code,
+                    respondent_id: this.respondent.id,
+                    statements: this.statements,
+                }, {
+                    bag: 'submitResponse'
+                });
+                form.post(route('questionnaires.finish'));
+            }
+        },
+        checkIfAllAnswered(statements) {
+            let is_answered = true;
+            _.forEach(statements, function(statement) {
+                //check if exists statement answer
+                let does_exist = _.has(statement, 'answer');
+                if (does_exist === false) {
+                    is_answered = false;
+                }
             });
-            form.post(route('questionnaires.finish'));
-        }
+            return is_answered;
+        },
     },
 })
 </script>

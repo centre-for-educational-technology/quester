@@ -22,7 +22,7 @@
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <jet-nav-link :href="route('questionnaires.index')" :active="route().current('questionnaires')" v-if="can('view questionnaires')">
+                                <jet-nav-link :href="route('questionnaires.index')" :active="route().current('questionnaires.index')" v-if="can('view questionnaires')">
                                     Questionnaires
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('results')" :active="route().current('results')" v-if="can('view results')">
