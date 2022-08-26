@@ -322,11 +322,31 @@ class QuestionnaireController extends Controller
         return Inertia::render('Response/Finished');
 
     }
-
+    public function resultsDestroy(Request $request,Questionnaire $questionnaire)
+    {
+        if (Auth::user()->isAdmin())
+        {
+        try {
+                Respondent::where('questionnaire_id',$questionnaire->id)->delete();
+                return response()->json("success");
+            }
+            catch(Exception $e){
+             return response()->json("error");
+            }
+        }
+        else {
+            abort(404);
+        }
+    }
     public function results() {
         if (Auth::user()) {
-            $questionnaires = Questionnaire::where('creator_id', Auth::id())->with('respondents')->get();
-            return Inertia::render('Results/Index', ['questionnaires' => $questionnaires]);
+            if (Auth::user()->isAdmin()) {
+                $questionnaires = Questionnaire::with('respondents')->get();
+            }
+            else {
+                $questionnaires = Questionnaire::where('creator_id', Auth::id())->with('respondents')->get();
+            }
+            return Inertia::render('Results/Index', ['questionnaires' => $questionnaires, 'admin'=>Auth::user()->isAdmin()]);
         }
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
     }

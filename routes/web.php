@@ -55,3 +55,4 @@ Route::get('/getQuestionnaireStatementsData', [QuestionnaireController::class, '
 
 
 Route::get('questionnaires/{questionnaire}/delete', [QuestionnaireController::class, 'destroy']);
+Route::get('/results/{questionnaire}/delete', [QuestionnaireController::class, 'resultsDestroy'])->name('results.destroy');
