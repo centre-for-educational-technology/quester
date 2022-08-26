@@ -7,6 +7,9 @@ import LaravelPermissionToVueJS from 'laravel-permission-to-vuejs'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
 createInertiaApp({
@@ -17,6 +20,7 @@ createInertiaApp({
             .use(plugin)
             .use(LaravelPermissionToVueJS)
             .use(ElementPlus)
+            .use(VueSweetalert2)
             .mixin({ methods: { route } })
             .mount(el);
     },
