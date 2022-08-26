@@ -198,10 +198,29 @@ class QuestionnaireController extends Controller
      * @param  \App\Models\Questionnaire  $questionnaire
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Questionnaire $questionnaire)
-    {
-        //
-    }
+     public function destroy(Request $request,Questionnaire $questionnaire)
+     {
+         $user = $request->user();
+         if ($user and $user->id === $questionnaire->creator_id)
+         {
+             try {
+                 if ($questionnaire->creator_id ===  $request->user()->id)
+                 {
+                   DB::table('statements')->where('questionnaire_id', $questionnaire->id)->delete();
+                   $questionnaire = Questionnaire::where('id', $questionnaire->id);
+
+                   $questionnaire->delete();
+                   return response()->json("success");
+                 }
+             }
+             catch(Exception $e){
+             return response()->json("error");
+             }
+         }
+         else {
+             abort(404);
+         }
+     }
 
     public function start(Request $request) {   //choose
         $code = $request['questionnaire_code'];

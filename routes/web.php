@@ -54,3 +54,4 @@ Route::get('/getStatementData', [QuestionnaireController::class, 'getStatementDa
 Route::get('/getQuestionnaireStatementsData', [QuestionnaireController::class, 'getQuestionnaireStatementsData']);
 
 
+Route::get('questionnaires/{questionnaire}/delete', [QuestionnaireController::class, 'destroy']);
