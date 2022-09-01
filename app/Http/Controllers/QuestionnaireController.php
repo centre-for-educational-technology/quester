@@ -323,6 +323,70 @@ class QuestionnaireController extends Controller
         return Inertia::render('Response/Finished');
 
     }
+
+    public function download(Request $request,Questionnaire $questionnaire){
+        $user = $request->user();
+        if ($user and $user->id === $questionnaire->creator_id)
+        {
+            //$questionnaire = Questionnaire::where('id', $questionnaire->id);
+
+            $header_row = null;
+
+            // questionnaire has constructs
+            $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
+
+            // construct have statements
+            $statements = DB::table('statements')->whereIn('construct_id', $construct_ids->all())->orderBy('position')->get();
+
+            // and questionnaire has statements
+            $questionnaire_statements = DB::table('statements')->where('questionnaire_id', $questionnaire->id)->orderBy('position')->get();
+
+            $statements = $statements->merge($questionnaire_statements);
+
+
+            foreach($statements as $statement) {
+                if ($header_row)
+                    $header_row = $header_row.",".'statement-'.$statement->position;
+                else
+                    $header_row = 'statement-'.$statement->position;
+            }
+            $header_row = 'start_time,end_time,'. $header_row."\n";
+            $all_rows = '';
+
+            $file_name = $questionnaire->name.'_responses.csv';
+
+            // Add response
+            $respondents = Respondent::where('questionnaire_id',$questionnaire->id)->get();
+
+            $all_rows = $all_rows.$respondents->count();
+
+            foreach($respondents as $respondent) { 
+                $row_data =  '';
+                if ($respondent->end_time){
+                    $row_data = $respondent->start_time.",".$respondent->end_time;
+                    foreach($statements as $statement) {
+                        $response = Response::where('respondent_id',$respondent->id)->where('statement_id',$statement->id)->first();
+                        if ($response)
+                        $row_data = $row_data.",".$response->answer;
+                        else
+                        $row_data = $row_data.",".' ';
+                    }
+                    $row_data = $row_data."\n";
+                    $all_rows = $all_rows.$row_data;
+                }
+            }
+        $csv_data = $header_row.$all_rows;
+
+        return response($csv_data)
+            ->header('Content-type','text/csv')
+            ->header('Content-Disposition','attachment; filename="'.$file_name.'"');
+        }
+        else
+            abort(404);
+        
+    }
+
+
     public function resultsDestroy(Request $request,Questionnaire $questionnaire)
     {
         if (Auth::user()->isAdmin())
