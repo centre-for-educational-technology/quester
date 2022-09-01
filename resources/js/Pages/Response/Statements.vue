@@ -86,7 +86,7 @@ export default defineComponent({
         NavLink,
         JetButton,
     },
-    props: ['questionnaire', 'respondent', 'statements'],
+    props: ['questionnaire', 'statements', 'start_time'],
     data() {
         return {
             responses: [
@@ -106,8 +106,8 @@ export default defineComponent({
                 let form = this.$inertia.form({
                     '_method': 'GET',
                     questionnaire_code: this.questionnaire.code,
-                    respondent_id: this.respondent.id,
                     statements: this.statements,
+                    start_time: this.start_time,
                 }, {
                     bag: 'submitResponse'
                 });

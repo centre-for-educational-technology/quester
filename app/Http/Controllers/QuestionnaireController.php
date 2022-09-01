@@ -265,12 +265,6 @@ class QuestionnaireController extends Controller
             $user_id = Auth::user()->id;
         }
 
-        // create respondent
-        $respondent  = Respondent::create([
-            'user_id' => $user_id,
-            'questionnaire_id' => $questionnaire->id,
-        ]);
-
         // questionnaire has constructs
         $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
 
@@ -284,8 +278,8 @@ class QuestionnaireController extends Controller
 
         return Inertia::render('Response/Statements', [
             'questionnaire' => $questionnaire,
-            'respondent' => $respondent,
             'statements' => $statements,
+            'start_time' => new DateTime(),
         ]);
 
     }
@@ -298,10 +292,17 @@ class QuestionnaireController extends Controller
             return Inertia::render('Welcome');
         }
 
-        $respondent_id = $request['respondent_id'];
-        $respondent = DB::table('respondents')->where('id', $respondent_id);
-        $respondent->update([
-            'end_time' => date('Y-m-d H:i:s'),
+        $user_id = null;
+        if (Auth::user()) {
+            $user_id = Auth::user()->id;
+        }
+
+        // create respondent
+        $respondent  = Respondent::create([
+            'user_id' => $user_id,
+            'questionnaire_id' => $questionnaire->id,
+            'start_time' => date($request['start_time']['date']),
+            'end_time' => date('Y-m-d H:i:s')
         ]);
 
         $statements = $request['statements'];
@@ -311,7 +312,7 @@ class QuestionnaireController extends Controller
 
             if (key_exists('answer', $statement)) {
                 $response = Response::create([
-                    'respondent_id' => $respondent_id,
+                    'respondent_id' => $respondent->id,
                     'answer' => $statement['answer'],
                     'statement_id' => $statement['id'],
                 ]);
