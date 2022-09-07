@@ -1,16 +1,17 @@
 <template>
     <app-layout title="Results">
-        <template #header>
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                Results
-            </h2>
-        </template>
-
         <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="overflow-hidden">
+                <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                 <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div class="ml-4 mt-2">
+                        <h2 class="text-xl font-medium leading-6 text-gray-900">Results</h2>
+                    </div>
+                 </div>
+                </div>
 
-                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border">
+                <div class="overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border mt-10">
                         <thead class="bg-gray-50">
                         <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
