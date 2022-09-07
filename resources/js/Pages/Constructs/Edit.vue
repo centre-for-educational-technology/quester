@@ -1,17 +1,18 @@
 <template>
     <app-layout title="Constructs">
-        <template #header>
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                Edit Construct
-            </h2>
-        </template>
-
         <div class="py-8">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg space-y-6 sm:p-6">
+                <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                 <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div class="ml-4 mt-2">
+                        <h2 class="text-xl font-medium leading-6 text-gray-900">Edit Construct</h2>
+                    </div>
+            
+                 </div>
+                </div>
 
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg space-y-6 sm:p-6 pt-10 mt-10">
                     <form @submit.prevent="$emit('saveConstruct')" class="space-y-6">
-
                         <div>
                             <jet-label for="title" value="Name" class="block text-sm font-medium text-gray-700" />
                             <jet-input id="title" v-model="form.name" type="text" class="mt-1 block w-full" ref="title" autocomplete="title" />
