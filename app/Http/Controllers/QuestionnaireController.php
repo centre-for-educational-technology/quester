@@ -326,7 +326,7 @@ class QuestionnaireController extends Controller
 
     public function download(Request $request,Questionnaire $questionnaire){
         $user = $request->user();
-        if ($user and $user->id === $questionnaire->creator_id)
+        if ($user and ($user->id === $questionnaire->creator_id or Auth::user()->isAdmin()))
         {
             //$questionnaire = Questionnaire::where('id', $questionnaire->id);
 
@@ -358,7 +358,7 @@ class QuestionnaireController extends Controller
             // Add response
             $respondents = Respondent::where('questionnaire_id',$questionnaire->id)->get();
 
-            $all_rows = $all_rows.$respondents->count();
+            $all_rows = '';
 
             foreach($respondents as $respondent) { 
                 $row_data =  '';
