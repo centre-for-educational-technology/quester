@@ -1,23 +1,47 @@
 <template>
-    <app-layout title="Constructs">
-        <template #header>
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                Questionnaires
-            </h2>
-        </template>
+    <app-layout title="Questionnaires">
+    
 
         <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                 <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div class="ml-4 mt-2">
+                        <h2 class="text-xl font-medium leading-6 text-gray-900">Questionnaires</h2>
+                    </div>
+                    <div v-if="questionnaires.data.length != 0" class="ml-4 mt-2 flex-shrink-0">
+                        <a href="questionnaires/create"><button type="button" class="relative inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">New Questionnaire</button></a>
+                    </div>
+                 </div>
+                </div>
                 <div class="overflow-hidden">
-                    <nav-link href="questionnaires/create" class=" font-semibold text-lg text-sky-500 hover:text-sky-700 py-4 float-right">Add New Questionnaire</nav-link>
+                    <div v-if="questionnaires.data.length == 0" class="text-center  pt-10 mt-10 ">
+                            <div>
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none"  xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" stroke-width="1.5" stroke="gray" >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                            </svg>
 
-                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border">
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No questionnaire</h3>
+                            <p class="mt-1 text-sm text-gray-500">Get started by creating a new questionnaire.</p>  
+                            <div class="mt-6">
+                                <a href="questionnaires/create"><button type="button" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <!-- Heroicon name: mini/plus -->
+                                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+                                    </svg>
+                                    New Questionnaire
+                                </button></a>
+                            </div>
+                            </div>
+                        </div>
+                    <table v-if="questionnaires.data.length != 0"  class="min-w-full divide-y divide-gray-300 shadow rounded-md border pt-10 mt-10 ">
                         <thead class="bg-gray-50">
                             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Subjects</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">End Date</th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Constructs</th>
                             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Share</th>
                             <th></th>
@@ -29,6 +53,7 @@
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{questionnaire.subject}}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.start_time) }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatDateTime(questionnaire.end_time) }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><span v-html="getStatus(questionnaire.start_time,questionnaire.end_time)"></span></td>
                                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                     <div class="inline-block" v-for="(construct, index) in questionnaire.constructs">
                                         <span :title="construct.name"
@@ -117,6 +142,18 @@ export default defineComponent({
         },
         formatDateTime(datetime)  {
             return moment.utc(datetime).local().format("DD.MM.YYYY H:mm");
+        },
+        getStatus(start,end)  {
+            var s = moment(start);
+            var e = moment(end);
+            var now = moment();
+
+            if (s.isAfter(now))
+                return '<span class="inline-flex items-center rounded-full bg-amber-200 px-3 py-1 text-sm font-medium text-amber-800">Scheduled</span>';
+            if (e.isAfter(now))
+                return '<span class="inline-flex items-center rounded-full bg-green-200 px-3 py-1 text-sm font-medium text-green-800">Active</span>';
+            if (now.isAfter(e))
+                return '<span class="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-800">Completed</span>';
         },
         showAlertConfirm(id){
             this.$swal({

@@ -1,13 +1,14 @@
 <template>
-    <app-layout title="Constructs">
-        <template #header>
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                Create new Questionnaire
-            </h2>
-        </template>
-
+    <app-layout title="Questionnaires">
         <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                 <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div class="ml-4 mt-2">
+                        <h2 class="text-xl font-medium leading-6 text-gray-900">Create New Questionnaire</h2>
+                    </div>
+                 </div>
+                </div>
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg space-y-6 sm:p-6">
 
                     <form @submit.prevent="$emit('saveQuestionnaire')" class="space-y-6">
@@ -64,7 +65,7 @@
                                         Delete
                                     </button>
                                 </div>
-                                <button type="button" @click="addStatement" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-150 sm:text-sm">
+                                <button type="button" @click="addStatement" class="mt-2 bg-green-100 text-green-800 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm font-medium border-green-200 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-150 sm:text-sm">
                                     Add new statement
                                 </button>
                             </div>
