@@ -1,15 +1,15 @@
 <template>
     <app-layout title="Users">
-        <template #header>
-            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-                Users
-            </h2>
-        </template>
-
         <div class="py-4">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+                 <div class="-ml-4 -mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+                    <div class="ml-4 mt-2">
+                        <h2 class="text-xl font-medium leading-6 text-gray-900">Questionnaires</h2>
+                    </div>     
+                 </div>
+                </div>
                 <div class="overflow-hidden">
-
                     <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border">
                         <thead class="bg-gray-50">
                             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">#</th>
@@ -25,8 +25,7 @@
                             <td class="whitespace-nowrap px-3 py-4 text-medium text-gray-900">{{ user.email }}</td>
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 <div class="inline-block" v-for="(role, index) in user.roles">
-                                        <span class="mr-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                                {{ role.name }}</span>
+                                    <span v-html="getRole(role.name)"></span>
                                 </div>
                             </td>
                             <td class="uppercase text-sm">
@@ -63,5 +62,13 @@ export default defineComponent({
         Pagination,
     },
     props: ['users'],
+    methods: {
+        getRole(role)  {
+            if (role === 'teacher')
+                return '<span class="inline-flex items-center rounded-full bg-green-200 px-3 py-1 text-sm font-medium text-green-800">Teacher</span>';
+            else if (role === 'super-admin')
+                return '<span class="inline-flex items-center rounded-full bg-amber-200 px-3 py-1 text-sm font-medium text-amber-900">Admin</span>';
+        },
+    }
 })
 </script>
