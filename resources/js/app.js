@@ -9,6 +9,8 @@ import 'element-plus/dist/index.css'
 
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import veProgress from "vue-ellipse-progress";
+
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -21,6 +23,7 @@ createInertiaApp({
             .use(LaravelPermissionToVueJS)
             .use(ElementPlus)
             .use(VueSweetalert2)
+            .use(veProgress)
             .mixin({ methods: { route } })
             .mount(el);
     },

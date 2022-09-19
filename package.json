@@ -31,6 +31,7 @@
         "laravel-permission-to-vuejs": "^3.0.0",
         "qrcode-vue3": "^1.4.17",
         "vue-chartjs": "^4.1.1",
+        "vue-ellipse-progress": "^2.1.1",
         "vue-lodash": "^2.1.2",
         "vue-moment": "^4.1.0",
         "vue-sweetalert2": "^5.0.5"
