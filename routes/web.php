@@ -57,3 +57,9 @@ Route::get('/getQuestionnaireStatementsData', [QuestionnaireController::class, '
 Route::get('questionnaires/{questionnaire}/delete', [QuestionnaireController::class, 'destroy']);
 Route::get('/results/{questionnaire}/delete', [QuestionnaireController::class, 'resultsDestroy'])->name('results.destroy');
 Route::get('questionnaires/{questionnaire}/download', [QuestionnaireController::class, 'download']);
+
+Route::get('/getConstructStatementsAverageResult',[QuestionnaireController::class,'getConstructStatementsAverageResult'])->name('construct.polar');
+Route::get('/getQuestionnaireConstructWiseAverage', [QuestionnaireController::class, 'getQuestionnaireConstructWiseAverage']);
+Route::get('/getConstructStatementResponseData', [QuestionnaireController::class, 'getConstructStatementResponseData']);
+Route::get('/getRespondent',[QuestionnaireController::class,'getRespondent']);
+Route::get('/getFeedback',[QuestionnaireController::class,'getFeedback']);

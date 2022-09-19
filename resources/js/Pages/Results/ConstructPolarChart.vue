@@ -1,5 +1,6 @@
 <template>
-    <Bar v-if="loaded"
+    
+    <PolarArea v-if="loaded"
         :chart-options="chartOptions"
         :chart-data="chartData"
         :chart-id="chartId"
@@ -10,21 +11,22 @@
         :width="width"
         :height="height"
     />
+
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { PolarArea } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement,RadialLinearScale,Plugin} from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, ArcElement, RadialLinearScale)
 
 export default {
-    name: 'StatementBarChart',
-    components: { Bar },
+    name: 'ContructPolarChart',
+    components: { PolarArea },
     props: {
         chartId: {
             type: String,
-            default: 'bar-chart'
+            default: 'polar-chart'
         },
         datasetIdKey: {
             type: String,
@@ -32,11 +34,11 @@ export default {
         },
         width: {
             type: Number,
-            default: 400
+            default: 300
         },
         height: {
             type: Number,
-            default: 400
+            default: 300
         },
         cssClasses: {
             default: '',
@@ -50,8 +52,8 @@ export default {
             type: Object,
             default: () => {}
         },
-        questionnaire_id: Number,
-        statement_id: Number,
+        questionnaire: Number,
+        construct: Number,
     },
     data() {
         return {
@@ -59,48 +61,46 @@ export default {
             chartData: null,
             chartOptions: {
                 responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    y: {
-                        ticks: {
-                            callback: (value, index) => {
-                                return ` ${value} %`;
-                            },
-                        },
+                maintainAspectRatio: false,
+                onClick:this.handle,
+                plugins:{
+                    legend:{
+                        display:false
                     },
                 },
-                tooltips: {
-                    enabled: true,
-                    callbacks: {
-                            label: ((tooltipItems, data) => {
-                            console.log(this);
-                            return tooltipItems.yLabel + '%';
-                            })
-                    }
-                }
             }
         }
     },
+    methods:{
+        handle (point, event) {
+    	    const item = event[0];
+            console.log(item);
+    	    this.$emit('on-receive', {
+                idx: item.index,
+      	    
+            });
+        },
+    },
     async created () {
-
         this.loaded = false
-
         let params = {
-            "questionnaire_id": this.questionnaire_id,
-            "statement_id": this.statement_id,
+            "questionnaire_id": this.questionnaire.id,
+            "construct_id": this.construct.id,
         }
-
         try {
-
-            await axios.get('/getStatementData', {params}).then(response => {
+            console.log(this.questionnaire_id);
+            console.log(this.construct_id);
+            console.log('Fetching construct');
+            await axios.get('/getConstructStatementsAverageResult', {params}).then(response => {
                 this.chartData = response.data;
                 this.loaded = true;
+
+                console.log(this.chartData);
             })
 
         } catch (e) {
             console.error(e)
         }
-
     }
 }
 </script>

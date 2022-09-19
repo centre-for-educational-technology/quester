@@ -8,6 +8,7 @@ use App\Models\Questionnaire;
 use App\Models\Respondent;
 use App\Models\Response;
 use App\Models\Statement;
+use App\Models\User;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -110,11 +111,21 @@ class QuestionnaireController extends Controller
             $questionnaire_statements = Statement::where('questionnaire_id', $questionnaire->id)->get();
 
             $respondents = Respondent::where('questionnaire_id', $questionnaire->id)->whereNotNull('end_time')->with('responses')->with('user')->get();
-            return Inertia::render('Results/Questionnaire', [
+            $feedback = $this->getFeedback($questionnaire->id,$constructs[0]->id);
+
+
+            $construct = Construct::where('id',$constructs[0]->id)->first();
+            $statements = DB::table('statements')->where('construct_id', $construct->id)->orderBy('position')->get();
+            
+            $score = $this->calculateStatementsAverage($questionnaire->id,$statements);
+
+            return Inertia::render('Results/Questionnaire2', [
                 'questionnaire' => $questionnaire,
                 'constructs' => $constructs,
                 'questionnaire_statements' => $questionnaire_statements,
-                'respondents' => $respondents
+                'respondents' => $respondents,
+                'feedback' => $feedback,
+                'score' => $score
             ]);
         }
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
@@ -426,7 +437,7 @@ class QuestionnaireController extends Controller
     public function getQuestionnaireStatementsAverageResult(Request $request) {
         $questionnaire_id = $request['questionnaire_id'];
         $statements = Statement::where('questionnaire_id', $questionnaire_id)->get();
-        return $this->calculateStatementsAverage($questionnaire_id, $statements);
+        return response()->json(array('data'=>$this->calculateStatementsAverage($questionnaire_id, $statements)));
     }
 
     public function calculateStatementsAverage($questionnaire_id, $statements) {
@@ -443,6 +454,41 @@ class QuestionnaireController extends Controller
         return $average;
     }
 
+    public function getStatementResponseData($questionnaire_id,$statement_id){
+        $respondents_ids = Respondent::where('questionnaire_id', $questionnaire_id)->pluck('id')->toArray();
+        $total_responses = count($respondents_ids);
+
+        $responses_with_answer_one = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 1)
+            ->count();
+        $responses_with_answer_two = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 2)
+            ->count();
+        $responses_with_answer_three = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 3)
+            ->count();
+        $responses_with_answer_four = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 4)
+            ->count();
+        $responses_with_answer_five = Response::whereIn('respondent_id', $respondents_ids)
+            ->where('statement_id', $statement_id)
+            ->where('answer', 5)
+            ->count();
+        $statement_data = array(
+            round($responses_with_answer_one*100/$total_responses,2),
+            round($responses_with_answer_two*100/$total_responses,2),
+            round($responses_with_answer_three*100/$total_responses,2),
+            round($responses_with_answer_four*100/$total_responses,2),
+            round($responses_with_answer_five*100/$total_responses,2),
+        );
+
+        return $statement_data;
+    }
+
     public function getQuestionnaireStatementAverageResult(Request $request) {
 
         $questionnaire_id = $request['questionnaire_id'];
@@ -453,6 +499,168 @@ class QuestionnaireController extends Controller
         return response()->json($average_result);
 
     }
+
+    public function getFeedback($questionnaire_id,$construct_id){
+        $response_summary = $this->getConstructStatementResponseData($questionnaire_id,$construct_id);
+        $per = (int)($response_summary['frac_all'] * 100);
+        $feedback = '';
+        if ($response_summary['frac_all'] > .20){
+            $feedback = "<span class='text-2xl rounded-lg p-2 font-bold text-red-800'>". $per."%</span> students report low cognitive engagement – they are not using any elaboration strategies. It may be helpful to encourage reflection upon learning and also to explicitly introduce following strategies  to the students and model their use. <ul class='list-disc p-2 text-xl'><li> generating one’s own examples</li> <li>putting concepts into one’s own words</li> <li>summarising new topics</li> <li>connecting new information to prior knowledge </ul>";
+        } else {
+            if ($response_summary['data'][0]['fraction'] > .2)
+            {
+            $feedback = "Generating one’s own examples helps make concepts easy to understand, but most students report not engaging in this task. Introducing this strategy and setting aside some time for creation and sharing of such examples will help students understand the content.<br/><br/>";
+            }
+            if ($response_summary['data'][1]['fraction'] > .2)
+            {
+            $feedback = $feedback."Putting new ideas into one’s own words aids understanding and later retrieval of information. Asking students to engage in such translation when something new is learnt will show them the usefulness of this strategy.<br/><br/>";
+            }
+            if ($response_summary['data'][2]['fraction'] > .2)
+            {
+            $feedback = $feedback."Summarising helps learners identify the key concepts of a new topic, but students report a lack of this practice. Making summarising of new topics mandatory for students can help enhance and track student understanding.<br/><br/>";
+            }
+            if ($response_summary['data'][3]['fraction'] > .2)
+            {
+            $feedback = $feedback."New topics are understood better and retained longer when connected to relevant prior knowledge. Starting a new topic with a discussion of related topics that have been studied earlier helps students create better schemas and also allows recognising of misconceptions and missing knowledge.<br/><br/>";
+            }
+        }
+        if ($feedback == ''){
+            $feedback = "It may be useful to discuss elaboration strategies  with ".implode(', ',$response_summary['users'])." as they report not using them currently.  <ul class='list-disc p-2 text-xl'><li> generating one’s own examples</li><li> putting concepts into one’s own words</li><li>  summarising new topics</li><li> connecting new information to prior knowledge</li></ul>";
+        }
+
+        return $feedback;
+    }
+
+
+    public function getConstructStatementResponseData($questionnaire_id,$construct_id){
+
+        $statements = Statement::where('construct_id', $construct_id)->get();
+        $respondents = Respondent::where('questionnaire_id', $questionnaire_id)->with('responses')->with('user')->get();
+        $total_responses = count($respondents);
+        foreach ($statements as $statement){
+            $agg_responses = $this->getStatementResponseData($questionnaire_id,$statement->id);
+            $frac_responses_1_2 = ($agg_responses[0] + $agg_responses[1])/$total_responses;
+            $res_data [] = array (
+                'text' => $statement->text,
+                'responses' => $agg_responses,
+                'fraction' => ($agg_responses[0] + $agg_responses[1])/$total_responses
+            );
+        }
+        // Fraction of respondends who answered first two choices for all statements for construct
+        $frac_all = 0;
+        $user_ids = [];
+        foreach ($respondents as $respondent){
+            $flag = true;
+            foreach ($statements as $statement){
+                $res_count = Response::where('respondent_id', $respondent->id)
+                ->where('statement_id', $statement->id)
+                ->where('answer', 1)
+                ->count() + Response::where('respondent_id', $respondent->id)
+                ->where('statement_id', $statement->id)
+                ->where('answer', 2)
+                ->count();
+                if ($res_count == 0){
+                    $flag = false;
+                    break;
+                }
+            }
+            if ($flag){
+                $frac_all = $frac_all + 1;
+                $user_ids [] = $respondent->user_id;
+            }       
+        }
+        # dummy data
+        $frac_all = 1;
+        $res_data[0]['fraction'] = .8;
+        $res_data[1]['fraction'] = .1;
+        $res_data[2]['fraction'] = .1;
+        $res_data[3]['fraction'] = 0;
+
+
+        $users = User::whereIn('id',$user_ids)->pluck('name')->toArray();
+        return array('total'=>$total_responses,'frac_all'=>$frac_all/$total_responses,'users'=>$users,'data'=>$res_data);
+    }
+
+    public function getRespondent(Request $request){
+        // Get details of respondents who answered 1 or 2.
+        $questionnaire_id = $request['questionnaire_id'];
+        $statement_id = $request['statement_id'];
+        $respondents = Respondent::where('questionnaire_id', $questionnaire_id)->get();
+        $user_ids = array();
+        foreach($respondents as $respondent){
+            $response = Response::where('respondent_id', $respondent->id)
+            ->where('statement_id', $statement_id)
+            ->where('answer',1)
+            ->orWhere('answer',2)
+            ->count();
+            if ($response > 0){
+                $user_ids[] =$respondent->user_id;
+            }
+        }
+        $users = User::whereIn('id',$user_ids)->pluck('name')->toArray();
+        return response()->json($users);
+    }
+
+    public function getQuestionnaireConstructWiseAverage(Request $request)
+    {
+        $questionnaire_id = $request['questionnaire_id'];
+        $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire_id)->pluck('construct_id')->all();
+        // and questionnaire has statements
+        $questionnaire_statements = DB::table('statements')->where('questionnaire_id', $questionnaire_id)->orderBy('position')->get();
+
+        foreach ($construct_ids as $construct_id){
+            // construct have statements
+            $statements = DB::table('statements')->where('construct_id', $construct_id)->orderBy('position')->get();
+            $construct = Construct::where('id',$construct_id)->first();
+            $labels []= $construct->name;
+            
+            $scores []= $this->calculateStatementsAverage($questionnaire_id,$statements);
+        }
+
+        $labels []= 'Other';
+        $scores []= $this->calculateStatementsAverage($questionnaire_id,$questionnaire_statements);
+
+        $chartData =  array(
+            'labels' => $labels,
+            'datasets' => [
+                array(
+                    'label' => 'Construct Scores',
+                    'backgroundColor' => '	rgb(179, 179, 255,.5)',
+                    'data' => $scores,
+                )
+            ]
+        );
+        return response()->json($chartData);
+
+    }
+        
+
+    public function getConstructStatementsAverageResult(Request $request)
+    {
+        $labels = [];
+        $scores = [];
+        $questionnaire_id = $request['questionnaire_id'];
+        $construct_id = $request['construct_id'];
+        $statements = Statement::where('construct_id', $construct_id)->get();
+        foreach ($statements as $statement) {
+            $statement_labels []= $statement->text;
+            $average_info = $this->getQuestionnaireStatementAverage($questionnaire_id, $statement->id);
+            $statements_data []= $average_info['average'];
+        }
+        $chartData =  array(
+            'labels' => $statement_labels,
+            'datasets' => [
+                array(
+                    'label' => 'Average',
+                    'backgroundColor' => '	rgb(179, 179, 255,.5)',
+                    'data' => $statements_data,
+                )
+            ]
+        );
+
+        return response()->json($chartData);
+        
+    } 
 
     public function getQuestionnaireStatementAverage($questionnaire_id, $statement_id) {
         $respondents = Respondent::where('questionnaire_id', $questionnaire_id)->with('responses')->with('user')->get();
@@ -482,37 +690,7 @@ class QuestionnaireController extends Controller
 
         $questionnaire_id = $request['questionnaire_id'];
         $statement_id = $request['statement_id'];
-
-        $respondents_ids = Respondent::where('questionnaire_id', $questionnaire_id)->pluck('id')->toArray();
-
-        $responses_with_answer_one = Response::whereIn('respondent_id', $respondents_ids)
-            ->where('statement_id', $statement_id)
-            ->where('answer', 1)
-            ->count();
-        $responses_with_answer_two = Response::whereIn('respondent_id', $respondents_ids)
-            ->where('statement_id', $statement_id)
-            ->where('answer', 2)
-            ->count();
-        $responses_with_answer_three = Response::whereIn('respondent_id', $respondents_ids)
-            ->where('statement_id', $statement_id)
-            ->where('answer', 3)
-            ->count();
-        $responses_with_answer_four = Response::whereIn('respondent_id', $respondents_ids)
-            ->where('statement_id', $statement_id)
-            ->where('answer', 4)
-            ->count();
-        $responses_with_answer_five = Response::whereIn('respondent_id', $respondents_ids)
-            ->where('statement_id', $statement_id)
-            ->where('answer', 5)
-            ->count();
-        $statement_data = array(
-            $responses_with_answer_one,
-            $responses_with_answer_two,
-            $responses_with_answer_three,
-            $responses_with_answer_four,
-            $responses_with_answer_five,
-        );
-
+        $statement_data = $this->getStatementResponseData($questionnaire_id,$statement_id);
         $chartData =  array(
             'labels' => [ 'Not very likely', 'Not likely', 'Hard to say', 'Likely', 'Very likely'],
              'datasets' => [
@@ -523,7 +701,6 @@ class QuestionnaireController extends Controller
                     )
                 ]
             );
-
         return response()->json($chartData);
 
     }
