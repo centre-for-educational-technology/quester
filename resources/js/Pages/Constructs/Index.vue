@@ -45,12 +45,14 @@
                             <tr v-for="(construct, index) in constructs" class="border m-1 border-gray-200">
                                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-sm text-gray-900 sm:pl-6">{{ index + 1 }}</td>
                                 <td class="whitespace-nowrap px-3 py-4 text-medium text-gray-900">
-                                    <div class="font-bold" :title="construct.objective">{{ construct.name }}</div>
+                                    <div class="font-bold" :title="construct.objective"> <a  :href="'/constructs/'+construct.id+'/edit'" class="text-indigo-500 hover:underline" >{{ construct.name }}</a></div>
                                 </td>
                                 <td class="whitespace-normal px-3 py-4 text-sm text-gray-500">
+                                    <ol class="list-decimal">
                                     <div v-for="statement in construct.statements">
-                                        {{ statement.text }}
+                                        <li>{{ statement.text }}</li>
                                     </div>
+                                    </ol>
                                 </td>
                                 <td class="uppercase text-sm text-gray-500">
                                     <div class="flex flex-row align-middle">
