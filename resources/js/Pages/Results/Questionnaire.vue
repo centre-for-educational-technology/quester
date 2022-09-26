@@ -51,7 +51,7 @@
                         </tr>
                     </table>
 
-                    <table class="min-w-full divide-y divide-gray-300 shadow rounded-md border my-5">
+                    <table v-if="questionnaire_statements.length!=0" class="min-w-full divide-y divide-gray-300 shadow rounded-md border my-5">
                         <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-3 py-3.5 text-left font-semibold text-gray-900">
