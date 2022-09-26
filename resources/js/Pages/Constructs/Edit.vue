@@ -34,7 +34,7 @@
                                         Delete
                                     </button>
                                 </div>
-                                <button type="button" @click="addStatement" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-150 sm:text-sm">
+                                <button type="button" @click="addStatement" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm font-medium rounded-md text-white hover:bg-indigo-500 bg-indigo-600 hover:bg-gray-150 sm:text-sm">
                                     Add new statement
                                 </button>
                             </div>
