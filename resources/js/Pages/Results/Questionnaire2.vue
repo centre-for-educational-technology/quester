@@ -1,14 +1,16 @@
 <template>
     <app-layout title="Results">
         <template #header>
-            <div class="grid justify-items-center mb-5">
-                <h1 class="font-bold text-2xl text-gray-800 leading-tight">
-                    {{ questionnaire.name }}
-                </h1>
-            </div> 
+            <h2 class="font-bold text-2xl text-gray-800 leading-tight">
+                {{ questionnaire.name }}
+            </h2>
         </template>
         <div class="py-2">
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
+                <span class="isolate inline-flex rounded-md shadow-sm">
+                    <button type="button"  class=" relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium bg-gray-200 text-gray-700 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" disabled>Graphs</button>
+                    <button type="button"  class=" relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"><a :href="'/questionnaires/'+questionnaire.id+'?table=1'">Table</a></button>
+                </span>
                 <div class="flex justify-around mb-5">
                     <div class=" mx-3 p-4 flex flex-col">
                         <div class="grid justify-around mb-3"><h3>Overall Score</h3></div><br/>
@@ -95,7 +97,7 @@ export default defineComponent({
             'progress': (100 * this.score/5).toFixed(2)
         }
     },
-    props: ['questionnaire', 'constructs', 'questionnaire_statements', 'respondents','feedback','score'],
+    props: ['questionnaire', 'constructs', 'questionnaire_statements', 'respondents','feedback','score','graphs-table'],
     methods: {
         getRespondentStatementAnswer: function(respondent_responses, statement_id) {
             let answer = "";

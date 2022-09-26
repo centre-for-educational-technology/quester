@@ -63,7 +63,7 @@ export default defineComponent({
         try {
 
             await axios.get('/getQuestionnaireStatementsAverageResult', {params}).then(response => {
-                this.average = response.data;
+                this.average = response.data.data;
                 this.loaded = true;
             })
 

@@ -19,7 +19,7 @@
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Start Date</th>
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">End Date</th>
                         <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Responses</th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
+                        
                         <th v-if="admin" scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"></th>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
@@ -36,6 +36,7 @@
                             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {{questionnaire.respondents.length}}
                             </td>
+                            <!-- Hide download button
                             <td class="uppercase text-sm text-gray-500"> 
                                     <a v-if="questionnaire.respondents.length !== 0" :href="'/questionnaires/'+questionnaire.id+'/download'">
                                         <el-tooltip content="Download responses in CSV" placement="top">
@@ -46,11 +47,13 @@
                                             </el-button>
                                         </el-tooltip>
                                     </a>
+                                    
                                     <button disabled v-if="questionnaire.respondents.length == 0" class=" bg-gray-100 text-gray-800 border-black py-2 px-4 rounded inline-flex items-center shadow-sm">
                                         <svg class="w-4 h-4 mr-2 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
                                             <span class="text-gray-500"> Download</span>
                                     </button>
-                            </td>
+                                   
+                            </td> -->
                             <td v-if="admin" class="uppercase text-sm text-gray-500">
                                     <a v-on:click="showAlertConfirm(questionnaire.id)">
                                         <el-tooltip content="Delete" placement="top">
