@@ -22,7 +22,10 @@
                             </div>
                             <div v-if="canLogin" class="md:block md:ml-10 md:pr-4 md:space-x-8">
 
-                                <a v-if="$page.props.user" href="/user/profile" class="text-sm text-gray-700 underline">Profile</a>
+                                <a v-if="can('view questionnaires')" href="/questionnaires" class="text-sm text-gray-700 underline">Questionnaires</a>
+
+                                <a v-else-if="$page.props.user" href="/user/profile" class="text-sm text-gray-700 underline">Profile</a>
+                                
 
                                 <template v-else>
 
@@ -71,12 +74,12 @@
             <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80" alt="">
         </div>
     </div>
-
+    <!-- Hiding laravel info
     <div v-if="$page.props.user && laravelVersion && phpVersion">
         <div class="ml-4 text-center text-sm text-gray-500 sm:text-right sm:ml-0">
             Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
         </div>
-    </div>
+    </div> -->
 </template>
 
 <script>
