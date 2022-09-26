@@ -103,7 +103,7 @@ class QuestionnaireController extends Controller
      * @param  \App\Models\Questionnaire  $questionnaire
      * @return \Inertia\Response
      */
-    public function show(Questionnaire $questionnaire)
+    public function show(Request $request, Questionnaire $questionnaire)
     {
         if (Auth::user()) {
             $construct_ids = DB::table('model_has_constructs')->where('model_id', $questionnaire->id)->pluck('construct_id');
@@ -119,13 +119,22 @@ class QuestionnaireController extends Controller
             
             $score = $this->calculateStatementsAverage($questionnaire->id,$statements);
 
-            return Inertia::render('Results/Questionnaire2', [
+            if ($request->exists('table')){
+                $template = 'Results/Questionnaire';
+            } else {
+                $template =  'Results/Questionnaire2';
+            }
+
+
+
+            return Inertia::render($template, [
                 'questionnaire' => $questionnaire,
                 'constructs' => $constructs,
                 'questionnaire_statements' => $questionnaire_statements,
                 'respondents' => $respondents,
                 'feedback' => $feedback,
-                'score' => $score
+                'score' => $score,
+                'graphs-table' => true
             ]);
         }
         return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
@@ -238,7 +247,7 @@ class QuestionnaireController extends Controller
         $questionnaire = DB::table('questionnaires')->where('code', $code)->first();
 
         if (!$questionnaire) {
-            return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true]);
+            return Inertia::render('Welcome', ['canLogin' => true, 'canRegister' => true, 'wrongPin' => true]);
         }
 
         $can_answer = $this->isQuestionnaireOpen($questionnaire);
@@ -501,31 +510,36 @@ class QuestionnaireController extends Controller
     }
 
     public function getFeedback($questionnaire_id,$construct_id){
+        $strategy_1 ="Generating one’s own examples helps make concepts easy to understand, but most students seem to struggle with this. Introducing this strategy and setting aside some time for creation and sharing of such examples will help students understand the content.";
+        $strategy_2 = "Putting new ideas into one’s own words aids understanding and later retrieval of information. Asking students to engage in such translation right after something new is learnt will show them the usefulness of this strategy.";
+        $strategy_3 = "Summarising helps learners identify the key concepts of a new topic, but students report a lack of this practice. Making summarising of new topics mandatory for students can help enhance and track student understanding.";
+        $strategy_4 =  "New topics are understood better and retained longer when connected to relevant prior knowledge. Starting a new topic with a discussion of related topics that have been studied earlier helps students create better schemas and also allows recognising of misconceptions and missing knowledge.";
+
         $response_summary = $this->getConstructStatementResponseData($questionnaire_id,$construct_id);
         $per = (int)($response_summary['frac_all'] * 100);
         $feedback = '';
         if ($response_summary['frac_all'] > .20){
-            $feedback = "<span class='text-2xl rounded-lg p-2 font-bold text-red-800'>". $per."%</span> students report low cognitive engagement – they are not using any elaboration strategies. It may be helpful to encourage reflection upon learning and also to explicitly introduce following strategies  to the students and model their use. <ul class='list-disc p-2 text-xl'><li> generating one’s own examples</li> <li>putting concepts into one’s own words</li> <li>summarising new topics</li> <li>connecting new information to prior knowledge </ul>";
+            $feedback = "<span class='text-2xl rounded-lg p-2 font-bold text-red-800'>". $per."%</span> students report low cognitive engagement – they struggle with using elaboration strategies. It may be helpful to encourage reflection upon learning and also to explicitly introduce following strategies  to the students and model their use. <ul class='list-disc p-2 text-xl'><li>".$strategy_1."</li><li>".$strategy_2."</li><li>".$strategy_3."</li><li>".$strategy_4."</li> </ul>";
         } else {
             if ($response_summary['data'][0]['fraction'] > .2)
             {
-            $feedback = "Generating one’s own examples helps make concepts easy to understand, but most students report not engaging in this task. Introducing this strategy and setting aside some time for creation and sharing of such examples will help students understand the content.<br/><br/>";
+            $feedback = $strategy_1."<br/><br/>";
             }
             if ($response_summary['data'][1]['fraction'] > .2)
             {
-            $feedback = $feedback."Putting new ideas into one’s own words aids understanding and later retrieval of information. Asking students to engage in such translation when something new is learnt will show them the usefulness of this strategy.<br/><br/>";
+            $feedback = $feedback.$strategy_2."<br/><br/>";
             }
             if ($response_summary['data'][2]['fraction'] > .2)
             {
-            $feedback = $feedback."Summarising helps learners identify the key concepts of a new topic, but students report a lack of this practice. Making summarising of new topics mandatory for students can help enhance and track student understanding.<br/><br/>";
+            $feedback = $feedback.$strategy_4."<br/><br/>";
             }
             if ($response_summary['data'][3]['fraction'] > .2)
             {
-            $feedback = $feedback."New topics are understood better and retained longer when connected to relevant prior knowledge. Starting a new topic with a discussion of related topics that have been studied earlier helps students create better schemas and also allows recognising of misconceptions and missing knowledge.<br/><br/>";
+            $feedback = $feedback.$strategy_4."<br/><br/>";
             }
         }
         if ($feedback == ''){
-            $feedback = "It may be useful to discuss elaboration strategies  with ".implode(', ',$response_summary['users'])." as they report not using them currently.  <ul class='list-disc p-2 text-xl'><li> generating one’s own examples</li><li> putting concepts into one’s own words</li><li>  summarising new topics</li><li> connecting new information to prior knowledge</li></ul>";
+            $feedback = "It may be useful to discuss elaboration strategies  with ".implode(', ',$response_summary['users'])." as they report not using them currently.  <ul class='list-disc p-2 text-xl'><li>".$strategy_1."</li><li>".$strategy_2."</li><li>".$strategy_3."</li><li>".$strategy_4."</li> </ul>";
         }
 
         return $feedback;
